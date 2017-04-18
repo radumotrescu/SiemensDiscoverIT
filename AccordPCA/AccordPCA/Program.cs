@@ -15,8 +15,8 @@ namespace AccordPCA
 
         static void ReadData(out double[,] data, out int n)
         {
-            //NumberGenerator ng = new NumberGenerator();
-            //ng.WriteToFile("data.txt", 25, 2, 4.0, 4.0, 2.0, 10.0, 10.0, 2.0);
+            NumberGenerator ng = new NumberGenerator();
+            ng.WriteToFile("data.txt", 25, 2, 4.0, 4.0, 2.0, 10.0, 10.0, 2.0);
 
             StreamReader sr = new StreamReader("data.txt");
             string text = sr.ReadToEnd();
