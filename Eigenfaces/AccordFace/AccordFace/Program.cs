@@ -22,7 +22,7 @@ namespace AccordFace
 
             for (int i = 0; i < 5; i++)
             {
-                string path = string.Format(@"D:\eigenfaces edit resize test\image{0}.bmp", i + 1);
+                string path = string.Format(@"D:\eigenfaces edit resize\image{0}.bmp", i + 1);
                 Bitmap newBitmap = new Bitmap(path);
                 bitmapList.Add(newBitmap);
             }

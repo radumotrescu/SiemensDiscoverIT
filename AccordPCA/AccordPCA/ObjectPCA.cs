@@ -6,10 +6,8 @@ using Accord.Math.Decompositions;
 using Accord.Statistics;
 using System.Collections.Generic;
 
-namespace AccordPCA
-{
-    class ObjectPCA
-    {
+namespace AccordPCA {
+    class ObjectPCA {
         public ObjectPCA(double[,] data, int n)
         {
             this.data = data;
@@ -54,12 +52,10 @@ namespace AccordPCA
 
 
             List<double[]> topl = new List<double[]>();
-            for (int i = 0; i < n; i++)
-            {
+            for (int i = 0; i < n; i++) {
                 topl.Add(rowOriginalData0.GetRow(i));
             }
-            for (int i = 0; i < n; i++)
-            {
+            for (int i = 0; i < n; i++) {
                 topl.Add(rowOriginalData1.GetRow(i));
             }
             double[][] toPlot = topl.ToArray();
@@ -90,14 +86,17 @@ namespace AccordPCA
             //ScatterplotBox.Show(rowOriginalData0).SetLinesVisible(true).SetSymbolSize((float)(0.10));
 
 
-
-
             ScatterplotBox.Show("Original data", data);
             ScatterplotBox.Show("PCA final data", finalData);
             //ScatterplotBox.Show("Row zero mean data", rowZeroMeanData2);
             //ScatterplotBox.Show("Reconstructed data from PCA final data", rowOriginalData2);
         }
 
+        public void vectorRecognition(double[] gamma)
+        {
+            var mean = gamma.Mean();
+            double[] gammaAdjusted = gamma.Subtract(mean);
 
+        }
     }
 }
