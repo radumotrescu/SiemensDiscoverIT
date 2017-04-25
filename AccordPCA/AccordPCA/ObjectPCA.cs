@@ -7,61 +7,121 @@ using Accord.Statistics;
 using System.Collections.Generic;
 
 namespace AccordPCA {
+
+
     class ObjectPCA {
-        public ObjectPCA(double[,] data, int n)
+        /// <summary>
+        /// ObjectPCA constructor
+        /// </summary>
+        /// <param name="data">Matrix to compute the PCA algorithm on</param>
+        public ObjectPCA(double[,] data)
         {
-            this.data = data;
-            this.n = n;
+            this.initialData = data;
+
         }
 
-        private double[,] data;
-        private int n;
+        private double[,] initialData;
+        private double[] mean;
+        private double[,] dataAdjusted;
+        private double[,] covarianceMatrix;
+        private EigenvalueDecomposition evd;
+        private double[] eigenvalues;
+        private double[,] eigenvectors;
+        private double[,] finalData;
 
+        /// <summary>
+        /// The data to compute the PCA on
+        /// </summary>
+        public double[,] InitialData
+        {
+            get { return initialData; }
+            set { initialData = value; }
+        }
+
+        /// <summary>
+        /// The means of the initial data matrix
+        /// </summary>
+        public double[] Mean
+        {
+            get { return mean; }
+        }
+
+        /// <summary>
+        /// The adjusted data of the initial data matrix : DataAdjusted = InitialData - Mean
+        /// </summary>
+        public double[,] DataAdjusted
+        {
+            get { return dataAdjusted; }
+        }
+
+        /// <summary>
+        /// The covariance matrix of the adjusted data matrix : 
+        /// cov(x, y) = (sum of the multiplication of each pair of data in the x and y dimensions) divided by (number of samples - 1) 
+        /// DataAdjusted = { cov(x,x) cov(x,y) }
+        ///              = { cov(y,x) cov(y,y) }
+        /// }
+        /// </summary>
+        public double[,] CovarianceMatrix
+        {
+            get { return covarianceMatrix; }
+        }
+
+        /// <summary>
+        /// The eigenvalues extracted from the covariance matrix from the determinant of |CovarianceMatrix - x*I|
+        /// </summary>
+        public double[] Eigenvalues
+        {
+            get { return eigenvalues; }
+        }
+
+        /// <summary>
+        /// The eigenvectors extracted from the multiplication of (CovarianceMatrix - x*I) and the respective eigenvector for x eigenvalue
+        /// </summary>
+        public double[,] Eigenvectors
+        {
+            get { return eigenvectors; }
+        }
+
+        /// <summary>
+        /// The final data resulted from multiplying DataAjusted and the descending order sorted eigenvectors
+        /// </summary>
+        public double[,] FinalData
+        {
+            get { return finalData; }
+        }
+
+
+        /// <summary>
+        /// Nethod to compute the PCA for the given data
+        /// </summary>
         public void Compute()
         {
-            double[] mean = data.Mean(0);
+            mean = initialData.Mean(0);
 
 
-            double[,] dataAdjusted = data.Subtract(mean, 0);
-            double[,] cov = dataAdjusted.Covariance();
+            dataAdjusted = initialData.Subtract(mean, 0);
+            covarianceMatrix = dataAdjusted.Covariance();
 
-            var evd = new EigenvalueDecomposition(cov);
+            evd = new EigenvalueDecomposition(covarianceMatrix);
 
-            double[] eigenvalues = evd.RealEigenvalues;
-            double[,] eigenvectors = evd.Eigenvectors;
+            eigenvalues = evd.RealEigenvalues;
+            eigenvectors = evd.Eigenvectors;
 
             eigenvectors = Matrix.Sort(eigenvalues, eigenvectors, new GeneralComparer(ComparerDirection.Descending, true));
 
 
-            double[,] featureVector0 = eigenvectors.GetColumn(0).Transpose();
-            double[,] featureVector1 = eigenvectors.GetColumn(1).Transpose();
-            double[,] featureVector2 = eigenvectors;
+            finalData = dataAdjusted.Dot(eigenvectors);
 
 
+        }
 
-            double[,] finalData = dataAdjusted.Dot(featureVector2);
-
-            double[,] rowZeroMeanData0 = finalData.Dot(featureVector0.Transpose());
-            double[,] rowZeroMeanData1 = finalData.Dot(featureVector1.Transpose());
-            double[,] rowZeroMeanData2 = finalData.Dot(featureVector2.Transpose());
-
-            double[,] rowOriginalData0 = rowZeroMeanData0.Add(mean, 0);
-            double[,] rowOriginalData1 = rowZeroMeanData1.Add(mean, 0);
-            double[,] rowOriginalData2 = rowZeroMeanData2.Add(mean, 0);
-
-
-
-            List<double[]> topl = new List<double[]>();
-            for (int i = 0; i < n; i++) {
-                topl.Add(rowOriginalData0.GetRow(i));
-            }
-            for (int i = 0; i < n; i++) {
-                topl.Add(rowOriginalData1.GetRow(i));
-            }
-            double[][] toPlot = topl.ToArray();
-
+        /// <summary>
+        /// Method to print the values of all the relevant PCA parts
+        /// </summary>
+        public void PrintToConsole()
+        {
             Console.WriteLine("Original data");
-            Console.WriteLine(data.ToString("+0.0000;-0.0000"));
+            Console.WriteLine(initialData.ToString("+0.0000;-0.0000"));
             Console.WriteLine("Mean");
             Console.WriteLine(mean.ToString("+0.000"));
             Console.WriteLine("Adjusted data");
@@ -73,29 +133,31 @@ namespace AccordPCA {
             Console.WriteLine("Final PCA data");
             Console.WriteLine(finalData.ToString("+0.0000;-0.0000"));
 
-
-
-
-
-            //Scatterplot scatterplot = new Scatterplot();
-            //scatterplot.Compute(finalData);
-            //ScatterplotView sv = new ScatterplotView(scatterplot);
-            //sv.LinesVisible = true;
-            //sv.CreateControl();
-            //sv.Show();
-            //ScatterplotBox.Show(rowOriginalData0).SetLinesVisible(true).SetSymbolSize((float)(0.10));
-
-
-            ScatterplotBox.Show("Original data", data);
-            ScatterplotBox.Show("PCA final data", finalData);
-            //ScatterplotBox.Show("Row zero mean data", rowZeroMeanData2);
-            //ScatterplotBox.Show("Reconstructed data from PCA final data", rowOriginalData2);
         }
 
-        public void vectorRecognition(double[] gamma)
+        /// <summary>
+        /// Method to show the scatterplots for the original and resulted PCA data
+        /// </summary>
+        public void ShowScatterplots()
         {
-            var mean = gamma.Mean();
-            double[] gammaAdjusted = gamma.Subtract(mean);
+            ScatterplotBox.Show("Original data", initialData);
+            ScatterplotBox.Show("PCA final data", finalData);
+        }
+
+        public void vectorRecognition(double x, double y)
+        {
+            double[,] point = new double[1, 2];
+            point[0, 0] = x;
+            point[0, 1] = y;
+
+            var mean = point.Mean(0);
+            double[,] newCloudAdjusted = point.Subtract(mean, 0);
+            double[,] Utransposed = finalData.Transpose();
+            var W = Utransposed.Dot(point);
+            Console.WriteLine(W.ToString("+0.000;-0.00"));
+            ScatterplotBox.Show(W);
+
+
 
         }
     }
