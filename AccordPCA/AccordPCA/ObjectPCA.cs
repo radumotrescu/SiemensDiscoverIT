@@ -152,9 +152,12 @@ namespace AccordPCA {
 
             var mean = point.Mean(0);
             double[,] newCloudAdjusted = point.Subtract(mean, 0);
-            double[,] Utransposed = finalData.Transpose();
-            var W = Utransposed.Dot(point);
-            Console.WriteLine(W.ToString("+0.000;-0.00"));
+
+
+            double[,] Utransposed = finalData;
+            var W = Utransposed.Dot(point.GetRow(0));
+
+            Console.WriteLine(W.ToString("+0.00;-0.00"));
             ScatterplotBox.Show(W);
 
 
