@@ -140,33 +140,38 @@ namespace AccordPCA {
             ScatterplotBox.Show("PCA final data", finalData);
         }
 
-        public void vectorRecognition(double x, double y)
+        public void pointRecognition(double x, double y)
         {
-            double[,] point = new double[1, 2];
+            var point = new double[1, 2];
             point[0, 0] = x;
             point[0, 1] = y;
 
-            var mean = point.Mean(0);
-            double[,] newCloudAdjusted = point.Subtract(this.mean, 0);
+            var newCloudAdjusted = point.Subtract(this.mean, 0);
 
+            var W = newCloudAdjusted.Dot(eigenvectors);
 
-            var W = finalData.Dot(newCloudAdjusted);
+            Console.WriteLine(W.ToString("+0.00;-0.00"));
 
             var minDistance = Double.MaxValue;
-            double minX = 0.0;
-            double minY = 0.0;
+            var minFinalX = 0.0;
+            var minFinalY = 0.0;
+            var minOriginalX = 0.0;
+            var minOriginaY = 0.0;
             for (int i = 0; i < finalData.Rows(); i++) {
-                var distance = Math.Sqrt(Math.Pow(finalData.GetRow(i)[0] - W.GetRow(i)[0], 2) + Math.Pow(finalData.GetRow(i)[1] - W.GetRow(i)[1], 2));
+                var distance = Math.Sqrt(Math.Pow(finalData.GetRow(i)[0] - W.GetRow(0)[0], 2) + Math.Pow(finalData.GetRow(i)[1] - W.GetRow(0)[1], 2));
                 if (distance < minDistance) {
                     minDistance = distance;
-                    minX = finalData.GetRow(i)[0];
-                    minY = finalData.GetRow(i)[1];
+                    minFinalX = finalData.GetRow(i)[0];
+                    minFinalY = finalData.GetRow(i)[1];
+                    minOriginalX = initialData.GetRow(i)[0];
+                    minOriginaY = initialData.GetRow(i)[1];
                 }
 
                 // Console.WriteLine(distance);
             }
 
-            Console.WriteLine("Minim: {0}, {1} ,{2}", minDistance, minX, minY);
+            Console.WriteLine("Distanta minima este: {0}, fata de punctul:  {1},{2}", minDistance, minFinalX, minFinalY);
+            Console.WriteLine("Cel mai apropiat punct de {0},{1} este {2},{3}", x, y, minOriginalX, minOriginaY);
 
             // Console.WriteLine(W.ToString("+0.00;-0.00"));
             //ScatterplotBox.Show(W);
