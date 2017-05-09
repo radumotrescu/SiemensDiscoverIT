@@ -91,13 +91,12 @@ namespace AccordPCA {
         }
 
 
-        /// <summary>
+        /// <summary>   
         /// Nethod to compute the PCA for the given data
         /// </summary>
         public void Compute()
         {
             mean = initialData.Mean(0);
-
 
             dataAdjusted = initialData.Subtract(mean, 0);
             covarianceMatrix = dataAdjusted.Covariance();
@@ -109,10 +108,7 @@ namespace AccordPCA {
 
             eigenvectors = Matrix.Sort(eigenvalues, eigenvectors, new GeneralComparer(ComparerDirection.Descending, true));
 
-
             finalData = dataAdjusted.Dot(eigenvectors);
-
-
         }
 
         /// <summary>
@@ -151,14 +147,29 @@ namespace AccordPCA {
             point[0, 1] = y;
 
             var mean = point.Mean(0);
-            double[,] newCloudAdjusted = point.Subtract(mean, 0);
+            double[,] newCloudAdjusted = point.Subtract(this.mean, 0);
 
 
-            double[,] Utransposed = finalData;
-            var W = Utransposed.Dot(point.GetRow(0));
+            var W = finalData.Dot(newCloudAdjusted);
 
-            Console.WriteLine(W.ToString("+0.00;-0.00"));
-            ScatterplotBox.Show(W);
+            var minDistance = Double.MaxValue;
+            double minX = 0.0;
+            double minY = 0.0;
+            for (int i = 0; i < finalData.Rows(); i++) {
+                var distance = Math.Sqrt(Math.Pow(finalData.GetRow(i)[0] - W.GetRow(i)[0], 2) + Math.Pow(finalData.GetRow(i)[1] - W.GetRow(i)[1], 2));
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    minX = finalData.GetRow(i)[0];
+                    minY = finalData.GetRow(i)[1];
+                }
+
+                // Console.WriteLine(distance);
+            }
+
+            Console.WriteLine("Minim: {0}, {1} ,{2}", minDistance, minX, minY);
+
+            // Console.WriteLine(W.ToString("+0.00;-0.00"));
+            //ScatterplotBox.Show(W);
 
 
 

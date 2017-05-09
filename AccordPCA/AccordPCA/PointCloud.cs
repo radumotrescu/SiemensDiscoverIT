@@ -61,7 +61,7 @@ namespace AccordPCA {
         /// <summary>
         /// Method to generate the cloud point with uniform spread
         /// </summary>
-        private void Generate()
+        private void generate()
         {
             for (var i = 0; i < count; i++) {
                 var angle = getDouble(0, 1);
@@ -83,7 +83,7 @@ namespace AccordPCA {
         /// <returns></returns>
         public double[,] ReturnDoubleMatrix()
         {
-            Generate();
+            generate();
             var data = new double[count, 2];
             for (var i = 0; i < count; i++) {
                 data[i, 0] = pointList[i].x;
