@@ -71,12 +71,12 @@ namespace AccordPCA {
             double[,] data;
             int pointNumber;
 
-            var pointCloud1 = new PointCloud(100, 3, 5, 5);
-            var pointCloud2 = new PointCloud(25, 3, 1, 1);
+            var pointCloud1 = new PointCloud(10, 2, 5, 5);
+            var pointCloud2 = new PointCloud(25, 4, 10, 10);
             var pointCloud3 = new PointCloud(50, 10, 25, 25);
             var cloudList = new List<PointCloud>();
             cloudList.Add(pointCloud1);
-            // cloudList.Add(pointCloud2);
+            cloudList.Add(pointCloud2);
             cloudList.Add(pointCloud3);
 
             //WriteDataToFile(cloudList, "data.txt");
@@ -86,7 +86,7 @@ namespace AccordPCA {
             PCA1.Compute();
             PCA1.ShowScatterplots();
 
-            PCA1.pointRecognition(30, 30);
+            PCA1.pointRecognition(10, 10);
 
 
 

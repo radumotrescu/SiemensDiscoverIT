@@ -146,37 +146,34 @@ namespace AccordPCA {
             point[0, 0] = x;
             point[0, 1] = y;
 
+            Console.WriteLine(Eigenvectors.ToString("+0.00;-0.00"));
+
             var newCloudAdjusted = point.Subtract(this.mean, 0);
 
-            var W = newCloudAdjusted.Dot(eigenvectors);
+            var yPrim = Eigenvectors.Dot(newCloudAdjusted.Transpose());
 
-            Console.WriteLine(W.ToString("+0.00;-0.00"));
+            Console.WriteLine();
+            Console.WriteLine(yPrim.ToString("+0.00;-0.00"));
 
-            var minDistance = Double.MaxValue;
-            var minFinalX = 0.0;
-            var minFinalY = 0.0;
-            var minOriginalX = 0.0;
-            var minOriginalY = 0.0;
-            for (int i = 0; i < finalData.Rows(); i++) {
-                var distance = Math.Sqrt(Math.Pow(finalData.GetRow(i)[0] - W.GetRow(0)[0], 2) + Math.Pow(finalData.GetRow(i)[1] - W.GetRow(0)[1], 2));
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    minFinalX = finalData.GetRow(i)[0];
-                    minFinalY = finalData.GetRow(i)[1];
-                    minOriginalX = initialData.GetRow(i)[0];
-                    minOriginalY = initialData.GetRow(i)[1];
+            var S = finalData.Subtract(yPrim.Transpose().GetRow(0), 0);
+
+            Console.WriteLine();
+            //Console.WriteLine(S.ToString("+0.00;-0.00"));
+
+            var final = new double[S.Rows()];
+            var min = Double.MaxValue;
+            var minIndex = 0;
+            for (int i = 0; i < final.Rows(); i++) {
+                final[i] = Math.Sqrt(Math.Pow(S[i, 0], 2) + Math.Pow(S[i, 1], 2));
+                if (final[i] < min) {
+                    min = final[i];
+                    minIndex = i;
                 }
-
-                // Console.WriteLine(distance);
             }
 
-            Console.WriteLine("Distanta minima este: {0}, fata de punctul:  {1},{2}", minDistance, minFinalX, minFinalY);
-            Console.WriteLine("Cel mai apropiat punct de {0},{1} este {2},{3}", x, y, minOriginalX, minOriginalY);
-
-            // Console.WriteLine(W.ToString("+0.00;-0.00"));
-            //ScatterplotBox.Show(W);
-
-
+            Console.WriteLine(min);
+            Console.WriteLine(finalData[minIndex, 0] + " " + finalData[minIndex, 1]);
+            Console.WriteLine(initialData[minIndex, 0] + " " + initialData[minIndex, 1]);
 
         }
     }
