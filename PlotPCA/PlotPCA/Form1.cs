@@ -15,26 +15,20 @@ namespace PlotPCA {
     public partial class Form1 : Form {
 
 
-        static void WriteDataToFile(List<PointCloud> pointCloudlist, string filePath)
+
+        static double[,] WriteDataToFile(PointCloud pointCloud, string filePath)
         {
             StreamWriter sw = new StreamWriter(filePath);
-            int totalRows = 0;
-            const int totalColumns = 2;
-            foreach (var pointCloud in pointCloudlist) {
-                totalRows += pointCloud.Count;
-            }
+            int totalRows = pointCloud.Count;
+            int totalColumns = 2;
             sw.WriteLine(totalRows + " " + totalColumns);
-            foreach (var pointCloud in pointCloudlist) {
-                var doubles = pointCloud.ReturnDoubleMatrix();
-                var count = pointCloud.Count;
-                for (var i = 0; i < count; i++) {
-                    sw.WriteLine(doubles[i, 0] + " " + doubles[i, 1]);
-
-                }
-
+            var doubles = pointCloud.ReturnDoubleMatrix();
+            for (int i = 0; i < totalRows; i++) {
+                sw.WriteLine(doubles[i, 0] + " " + doubles[i, 1]);
             }
             sw.Close();
 
+            return doubles;
         }
 
         static void ReadDataFromFile(out double[,] data, out int count, string filePath)
@@ -62,6 +56,17 @@ namespace PlotPCA {
             }
         }
 
+        static void PointPairListInitialisation(PointPairList cloudPoints, string fileName)
+        {
+            double[,] cloudData;
+            int pointNumberCloud;
+
+            ReadDataFromFile(out cloudData, out pointNumberCloud, fileName);
+            for (int i = 0; i < pointNumberCloud; i++) {
+                cloudPoints.Add(cloudData[i, 0], cloudData[i, 1]);
+            }
+        }
+
         GraphPane myPane;
         public Form1()
         {
@@ -71,7 +76,7 @@ namespace PlotPCA {
             myPane.Title.Text = "PCA Plot Data";
             myPane.XAxis.Title.Text = "X Coordinates";
             myPane.YAxis.Title.Text = "Y Coordinates";
-
+            zedGraphControl1.IsShowPointValues = true;
 
 
         }
@@ -83,58 +88,34 @@ namespace PlotPCA {
 
         private void button1_Click(object sender, EventArgs e)
         {
-
-            var pointCloud1 = new PointCloud(10, 2, 5, 5);
-            var pointCloud2 = new PointCloud(25, 4, 10, 10);
-            var pointCloud3 = new PointCloud(50, 10, 25, 25);
-
-            var cloudList = new List<PointCloud>();
-            cloudList.Add(pointCloud1);
-            WriteDataToFile(cloudList, "cloud1.txt");
-            cloudList.Clear();
-            cloudList.Add(pointCloud2);
-            WriteDataToFile(cloudList, "cloud2.txt");
-            cloudList.Clear();
-            cloudList.Add(pointCloud3);
-            WriteDataToFile(cloudList, "cloud3.txt");
-
-
-
-
             myPane.CurveList.Clear();
+
+            var pointCloud1 = new PointCloud(15, 2, 5, 5);
+            var pointCloud2 = new PointCloud(25, 4, 10, 10);
+            var pointCloud3 = new PointCloud(100, 10, 30, 30);
+
+            var data1=WriteDataToFile(pointCloud1, "cloud1.txt");
+            var data2=WriteDataToFile(pointCloud2, "cloud2.txt");
+            var data3=WriteDataToFile(pointCloud3, "cloud3.txt");
+
+
+
+
+
+
+
+
+
+
+
 
             PointPairList cloud1 = new PointPairList();
             PointPairList cloud2 = new PointPairList();
             PointPairList cloud3 = new PointPairList();
 
-
-            double[,] cloud1Data;
-            int pointNumberCloud1;
-            ReadDataFromFile(out cloud1Data, out pointNumberCloud1, "cloud1.txt");
-            for (int i = 0; i < pointNumberCloud1; i++) {
-
-                cloud1.Add(cloud1Data[i, 0], cloud1Data[i, 1]);
-
-            }
-
-
-            double[,] cloud2Data;
-            int pointNumberCloud2;
-            ReadDataFromFile(out cloud2Data, out pointNumberCloud2, "cloud2.txt");
-            for (int i = 0; i < pointNumberCloud2; i++) {
-
-                cloud2.Add(cloud2Data[i, 0], cloud2Data[i, 1]);
-
-            }
-
-            double[,] cloud3Data;
-            int pointNumberCloud3;
-            ReadDataFromFile(out cloud3Data, out pointNumberCloud3, "cloud3.txt");
-            for (int i = 0; i < pointNumberCloud3; i++) {
-
-                cloud3.Add(cloud3Data[i, 0], cloud3Data[i, 1]);
-
-            }
+            PointPairListInitialisation(cloud1, "cloud1.txt");
+            PointPairListInitialisation(cloud2, "cloud2.txt");
+            PointPairListInitialisation(cloud3, "cloud3.txt");
 
             LineItem cloud1Points = myPane.AddCurve("Cloud1", cloud1, Color.Red, SymbolType.Circle);
             cloud1Points.Line.IsVisible = false;
@@ -143,10 +124,8 @@ namespace PlotPCA {
             LineItem cloud3Points = myPane.AddCurve("Cloud3", cloud3, Color.Green, SymbolType.Star);
             cloud3Points.Line.IsVisible = false;
 
-            zedGraphControl1.IsShowPointValues = true;
             myPane.AxisChange();
             zedGraphControl1.Invalidate();
-
         }
     }
 }

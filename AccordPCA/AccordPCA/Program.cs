@@ -86,7 +86,7 @@ namespace AccordPCA {
             PCA1.Compute();
             PCA1.ShowScatterplots();
 
-            PCA1.pointRecognition(10, 10);
+            PCA1.pointRecognition(3.69475760080696, 4.29436536105327);
 
 
 
