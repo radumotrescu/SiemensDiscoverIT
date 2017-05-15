@@ -11,121 +11,164 @@ using ZedGraph;
 using System.IO;
 using AccordPCA;
 
-namespace PlotPCA {
-    public partial class Form1 : Form {
+namespace PlotPCA
+{
+	public partial class Form1 : Form
+	{
 
 
 
-        static double[,] WriteDataToFile(PointCloud pointCloud, string filePath)
-        {
-            StreamWriter sw = new StreamWriter(filePath);
-            int totalRows = pointCloud.Count;
-            int totalColumns = 2;
-            sw.WriteLine(totalRows + " " + totalColumns);
-            var doubles = pointCloud.ReturnDoubleMatrix();
-            for (int i = 0; i < totalRows; i++) {
-                sw.WriteLine(doubles[i, 0] + " " + doubles[i, 1]);
-            }
-            sw.Close();
+		static double[,] WriteDataToFile(PointCloud pointCloud, string filePath)
+		{
+			StreamWriter sw = new StreamWriter(filePath);
+			int totalRows = pointCloud.Count;
+			int totalColumns = 2;
+			sw.WriteLine(totalRows + " " + totalColumns);
+			var doubles = pointCloud.ReturnDoubleMatrix();
+			for (int i = 0; i < totalRows; i++)
+			{
+				sw.WriteLine(doubles[i, 0] + " " + doubles[i, 1]);
+			}
+			sw.Close();
 
-            return doubles;
-        }
+			return doubles;
+		}
 
-        static void ReadDataFromFile(out double[,] data, out int count, string filePath)
-        {
-            StreamReader sr = new StreamReader(filePath);
-            string text = sr.ReadToEnd();
-            sr.Close();
+		static void ReadDataFromFile(out double[,] data, out int count, string filePath)
+		{
+			StreamReader sr = new StreamReader(filePath);
+			string text = sr.ReadToEnd();
+			sr.Close();
 
-            string[] bits = text.Split(new char[] { ' ', '\n' });
-            List<double[]> doubleBits = new List<double[]>();
+			string[] bits = text.Split(new char[] { ' ', '\n' });
+			List<double[]> doubleBits = new List<double[]>();
 
-            int m;
-            int.TryParse(bits[0], out count);
-            int.TryParse(bits[1], out m);
+			int m;
+			int.TryParse(bits[0], out count);
+			int.TryParse(bits[1], out m);
 
-            data = new double[count, m];
+			data = new double[count, m];
 
-            int k = 2;
-            for (var i = 0; i < count; i++) {
-                for (var j = 0; j < m; j++) {
-                    double x;
-                    double.TryParse(bits[k++], out x);
-                    data[i, j] = x;
-                }
-            }
-        }
+			int k = 2;
+			for (var i = 0; i < count; i++)
+			{
+				for (var j = 0; j < m; j++)
+				{
+					double x;
+					double.TryParse(bits[k++], out x);
+					data[i, j] = x;
+				}
+			}
+		}
 
-        static void PointPairListInitialisation(PointPairList cloudPoints, string fileName)
-        {
-            double[,] cloudData;
-            int pointNumberCloud;
+		static void PointPairListInitialisation(PointPairList cloudPoints, string fileName)
+		{
+			double[,] cloudData;
+			int pointNumberCloud;
 
-            ReadDataFromFile(out cloudData, out pointNumberCloud, fileName);
-            for (int i = 0; i < pointNumberCloud; i++) {
-                cloudPoints.Add(cloudData[i, 0], cloudData[i, 1]);
-            }
-        }
+			ReadDataFromFile(out cloudData, out pointNumberCloud, fileName);
+			for (int i = 0; i < pointNumberCloud; i++)
+			{
+				cloudPoints.Add(cloudData[i, 0], cloudData[i, 1]);
+			}
+		}
 
-        GraphPane myPane;
-        public Form1()
-        {
-            InitializeComponent();
+		static void PointPairListInitialisation(PointPairList cloudPoints, PointCloud point)
+		{
+			double[,] cloudData = point.ReturnRawDoubleMatrix();
+			for (int i = 0; i < point.Count; i++)
+			{
+				cloudPoints.Add(cloudData[i, 0], cloudData[i, 1]);
+			}
+		}
 
-            myPane = zedGraphControl1.GraphPane;
-            myPane.Title.Text = "PCA Plot Data";
-            myPane.XAxis.Title.Text = "X Coordinates";
-            myPane.YAxis.Title.Text = "Y Coordinates";
-            zedGraphControl1.IsShowPointValues = true;
+		GraphPane myPaneOriginalData;
+		GraphPane myPaneFinalData;
+		public Form1()
+		{
+			InitializeComponent();
+
+			myPaneOriginalData = zedGraphControl1.GraphPane;
+			myPaneOriginalData.Title.Text = "PCA Initial Data";
+			myPaneOriginalData.XAxis.Title.Text = "X Coordinates";
+			myPaneOriginalData.YAxis.Title.Text = "Y Coordinates";
+			zedGraphControl1.IsShowPointValues = true;
+
+			myPaneFinalData = zedGraphControl2.GraphPane;
+			myPaneFinalData.Title.Text = "PCA Final Data";
+			myPaneFinalData.XAxis.Title.Text = "X Coordinates";
+			myPaneFinalData.YAxis.Title.Text = "Y Coordinates";
+			zedGraphControl2.IsShowPointValues = true;
+
+		}
+
+		private void zedGraphControl1_Load(object sender, EventArgs e)
+		{
+
+		}
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			myPaneOriginalData.CurveList.Clear();
+			myPaneFinalData.CurveList.Clear();
+
+			var initialPointCloud1 = new PointCloud(15, 2, 5, 5);
+			var initialPointCloud2 = new PointCloud(25, 4, 10, 10);
+			var initialPointCloud3 = new PointCloud(100, 10, 30, 30);
+
+			var data1 = WriteDataToFile(initialPointCloud1, "cloud1.txt");
+			var data2 = WriteDataToFile(initialPointCloud2, "cloud2.txt");
+			var data3 = WriteDataToFile(initialPointCloud3, "cloud3.txt");
+
+			ObjectPCA obj1 = new ObjectPCA(data1);
+			obj1.Compute();
+			ObjectPCA obj2 = new ObjectPCA(data2);
+			obj2.Compute();
+			ObjectPCA obj3 = new ObjectPCA(data3);
+			obj3.Compute();
+
+			var finalPointCloud1 = new PointCloud(obj1.FinalData, 15);
+			var finalPointCloud2 = new PointCloud(obj2.FinalData, 25);
+			var finalPointCloud3 = new PointCloud(obj3.FinalData, 100);
 
 
-        }
 
-        private void zedGraphControl1_Load(object sender, EventArgs e)
-        {
+			PointPairList initialCloud1 = new PointPairList();
+			PointPairList initialCloud2 = new PointPairList();
+			PointPairList initialCloud3 = new PointPairList();
 
-        }
+			PointPairListInitialisation(initialCloud1, "cloud1.txt");
+			PointPairListInitialisation(initialCloud2, "cloud2.txt");
+			PointPairListInitialisation(initialCloud3, "cloud3.txt");
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            myPane.CurveList.Clear();
-
-            var pointCloud1 = new PointCloud(15, 2, 5, 5);
-            var pointCloud2 = new PointCloud(25, 4, 10, 10);
-            var pointCloud3 = new PointCloud(100, 10, 30, 30);
-
-            var data1=WriteDataToFile(pointCloud1, "cloud1.txt");
-            var data2=WriteDataToFile(pointCloud2, "cloud2.txt");
-            var data3=WriteDataToFile(pointCloud3, "cloud3.txt");
+			LineItem initialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
+			initialCloud1Points.Line.IsVisible = false;
+			LineItem initialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
+			initialCloud2Points.Line.IsVisible = false;
+			LineItem initialCloud3Points = myPaneOriginalData.AddCurve("Cloud3", initialCloud3, Color.Green, SymbolType.Star);
+			initialCloud3Points.Line.IsVisible = false;
 
 
+			var finalCloud1 = new PointPairList();
+			var finalCloud2 = new PointPairList();
+			var finalCloud3 = new PointPairList();
 
+			PointPairListInitialisation(finalCloud1, finalPointCloud1);
+			PointPairListInitialisation(finalCloud2, finalPointCloud2);
+			PointPairListInitialisation(finalCloud3, finalPointCloud3);
 
+			LineItem finalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
+			finalCloud1Points.Line.IsVisible = false;
+			LineItem finalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
+			finalCloud2Points.Line.IsVisible = false;
+			LineItem finalCloud3Points = myPaneFinalData.AddCurve("Cloud3", finalCloud3, Color.Green, SymbolType.Star);
+			finalCloud3Points.Line.IsVisible = false;
 
+			myPaneOriginalData.AxisChange();
+			zedGraphControl1.Invalidate();
 
-
-
-
-
-
-
-            PointPairList cloud1 = new PointPairList();
-            PointPairList cloud2 = new PointPairList();
-            PointPairList cloud3 = new PointPairList();
-
-            PointPairListInitialisation(cloud1, "cloud1.txt");
-            PointPairListInitialisation(cloud2, "cloud2.txt");
-            PointPairListInitialisation(cloud3, "cloud3.txt");
-
-            LineItem cloud1Points = myPane.AddCurve("Cloud1", cloud1, Color.Red, SymbolType.Circle);
-            cloud1Points.Line.IsVisible = false;
-            LineItem cloud2Points = myPane.AddCurve("Cloud2", cloud2, Color.Blue, SymbolType.Diamond);
-            cloud2Points.Line.IsVisible = false;
-            LineItem cloud3Points = myPane.AddCurve("Cloud3", cloud3, Color.Green, SymbolType.Star);
-            cloud3Points.Line.IsVisible = false;
-
-            myPane.AxisChange();
-            zedGraphControl1.Invalidate();
-        }
-    }
+			myPaneFinalData.AxisChange();
+			zedGraphControl2.Invalidate();
+		}
+	}
 }
