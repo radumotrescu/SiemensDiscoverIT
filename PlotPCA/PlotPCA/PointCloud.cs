@@ -94,22 +94,24 @@ namespace AccordPCA {
 		{
 			for (var i = 0; i < count; i++) {
 
-				var valx = getDouble(-1, 1);
-				var valy = getDouble(0, 1);
-				double r = 1;
+                double r = maxRadius;
 
-				double rmic = 0.5;
+				var valx = getDouble(-r, r);
+				var valy = getDouble(0, r);
+				
+
+				double rmic = r/2;
 				double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
 
 				while (valy >= x) {
 
-					valy = getDouble(0, 1);
+					valy = getDouble(0, r);
 				}
 
 				if (valx >= -rmic && valx <= rmic) {
 					double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
 					while (valy <= y) {
-						valy = getDouble(0, 1);
+						valy = getDouble(0, r);
 					}
 				}
 				Point newPoint;
@@ -129,23 +131,24 @@ namespace AccordPCA {
 		{
 			for (var i = 0; i < count; i++) {
 
+                double r = maxRadius;
 
-				var valx = getDouble(-1, 1);
-				var valy = getDouble(-1, 1);
-				double r = 1;
+				var valx = getDouble(-r, r);
+				var valy = getDouble(-r, r);
+				
 
-				double rmic = 0.5;
+				double rmic = r/2;
 				double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
 
-				while (valy >= x && valy <= -x) {
+                while (valy >= x || valy <= -x) {
 
-					valy = getDouble(0, 1);
+					valy = getDouble(-1, 1);
 				}
 
 				if (valx >= -rmic && valx <= rmic) {
 					double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
 					while (valy <= y && valy >= -y) {
-						valy = getDouble(0, 1);
+						valy = getDouble(-r, r);
 					}
 				}
 
