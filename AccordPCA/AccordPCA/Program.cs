@@ -46,7 +46,7 @@ namespace AccordPCA {
 			string text = sr.ReadToEnd();
 			sr.Close();
 
-			string[] bits = text.Split(new char[] { ' ', '\n' });
+			string[] bits = text.Split(new char[] { ' ', '\n','\r' });
 			List<double[]> doubleBits = new List<double[]>();
 
 			int m;
@@ -80,14 +80,14 @@ namespace AccordPCA {
 			//cloudList.Add(pointCloud2);
 			//cloudList.Add(pointCloud3);
 
-			WriteDataToFile(cloudList, "data.txt");
-			ReadDataFromFile(out data, out pointNumber, "data.txt");
+			//WriteDataToFile(cloudList, "data.txt");
+			ReadDataFromFile(out data, out pointNumber, "iris.txt");
 
 			var PCA1 = new ObjectPCA(data);
 			PCA1.Compute();
 			PCA1.ShowScatterplots();
 
-			PCA1.pointRecognition(2, 5);
+			//PCA1.pointRecognition(2, 5);
 
 			//double[,] curve = new double[60, 2];
 			//double x = 1;

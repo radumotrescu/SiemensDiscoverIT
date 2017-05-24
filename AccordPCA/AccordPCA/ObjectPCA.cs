@@ -28,6 +28,7 @@ namespace AccordPCA {
         private double[] eigenvalues;
         private double[,] eigenvectors;
         private double[,] finalData;
+        private double[,] data2D;
 
         /// <summary>
         /// The data to compute the PCA on
@@ -90,6 +91,9 @@ namespace AccordPCA {
             get { return finalData; }
         }
 
+        public double[,] Data2D
+        { get { return data2D; } }
+
 
         /// <summary>   
         /// Nethod to compute the PCA for the given data
@@ -109,6 +113,10 @@ namespace AccordPCA {
             eigenvectors = Matrix.Sort(eigenvalues, eigenvectors, new GeneralComparer(ComparerDirection.Descending, true));
 
             finalData = dataAdjusted.Dot(eigenvectors);
+
+            data2D = finalData.GetColumns(0, 1);
+
+
         }
 
         /// <summary>
@@ -136,8 +144,8 @@ namespace AccordPCA {
         /// </summary>
         public void ShowScatterplots()
         {
-            ScatterplotBox.Show("Original data", initialData);
-            ScatterplotBox.Show("PCA final data", finalData);
+            //ScatterplotBox.Show("Original data", initialData);
+            ScatterplotBox.Show("PCA final data",data2D);
         }
 
         public void pointRecognition(double x, double y)
