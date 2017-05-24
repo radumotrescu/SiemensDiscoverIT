@@ -5,16 +5,13 @@ using System.Collections.Generic;
 //double valx = angle * Math.Cos(radius) * radius1;
 //double valy = angle * Math.Sin(radius) * radius1;
 
-namespace AccordPCA
-{
-	class PointCloud
-	{
+namespace AccordPCA {
+	class PointCloud {
 
 		/// <summary>
 		/// Structure to be used for specifying a point in a (x,y) coordonate system
 		/// </summary>
-		private struct Point
-		{
+		private struct Point {
 			public double x, y;
 		}
 
@@ -34,8 +31,7 @@ namespace AccordPCA
 		{
 			pointList = new List<Point>();
 			Count = count;
-			for (int i = 0; i < count; i++)
-			{
+			for (int i = 0; i < count; i++) {
 				var newPoint = new Point { x = data[i, 0], y = data[i, 1] };
 				pointList.Add(newPoint);
 			}
@@ -63,8 +59,7 @@ namespace AccordPCA
 		/// <summary>
 		/// Represents the radius of the cloud point
 		/// </summary>
-		public double MaxRadius
-		{
+		public double MaxRadius {
 			get { return maxRadius; }
 			set { maxRadius = value; }
 		}
@@ -72,8 +67,7 @@ namespace AccordPCA
 		/// <summary>
 		/// Represents the number of points in the cloud
 		/// </summary>
-		public int Count
-		{
+		public int Count {
 			get { return count; }
 			set { count = value; }
 		}
@@ -81,10 +75,9 @@ namespace AccordPCA
 		/// <summary>
 		/// Method to generate the cloud point with uniform spread
 		/// </summary>
-		private void generate()
+		private void generateRoundCloud()
 		{
-			for (var i = 0; i < count; i++)
-			{
+			for (var i = 0; i < count; i++) {
 				var angle = getDouble(0, 1);
 				var radius = getDouble(0, 2 * Math.PI);
 
@@ -97,17 +90,82 @@ namespace AccordPCA
 			}
 		}
 
+		private void generateMoonCloud(bool up)
+		{
+			for (var i = 0; i < count; i++) {
+
+				var valx = getDouble(-1, 1);
+				var valy = getDouble(0, 1);
+				double r = 1;
+
+				double rmic = 0.5;
+				double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
+
+				while (valy >= x) {
+
+					valy = getDouble(0, 1);
+				}
+
+				if (valx >= -rmic && valx <= rmic) {
+					double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
+					while (valy <= y) {
+						valy = getDouble(0, 1);
+					}
+				}
+				Point newPoint;
+				if (up == false) {
+					newPoint = new Point { x = valx + basePoint.x, y = -valy + basePoint.y };
+				}
+				else {
+					newPoint = new Point { x = valx + basePoint.x, y = valy + basePoint.y };
+				}
+
+				pointList.Add(newPoint);
+
+			}
+		}
+
+		private void generateCircleCloud()
+		{
+			for (var i = 0; i < count; i++) {
+
+
+				var valx = getDouble(-1, 1);
+				var valy = getDouble(-1, 1);
+				double r = 1;
+
+				double rmic = 0.5;
+				double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
+
+				while (valy >= x && valy <= -x) {
+
+					valy = getDouble(0, 1);
+				}
+
+				if (valx >= -rmic && valx <= rmic) {
+					double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
+					while (valy <= y && valy >= -y) {
+						valy = getDouble(0, 1);
+					}
+				}
+
+				var newPoint = new Point { x = valx + basePoint.x, y = valy + basePoint.y };
+
+				pointList.Add(newPoint);
+
+			}
+		}
+
 
 		/// <summary>
 		/// Method to return the matrix representation of the cloud point
 		/// </summary>
 		/// <returns></returns>
-		public double[,] ReturnDoubleMatrix()
+		public double[,] ReturnCloudDoubleMatrix()
 		{
-			generate();
+			generateRoundCloud();
 			var data = new double[count, 2];
-			for (var i = 0; i < count; i++)
-			{
+			for (var i = 0; i < count; i++) {
 				data[i, 0] = pointList[i].x;
 				data[i, 1] = pointList[i].y;
 			}
@@ -115,11 +173,32 @@ namespace AccordPCA
 
 		}
 
+		public double[,] ReturnCircleDoubleMatrix()
+		{
+			generateCircleCloud();
+			var data = new double[count, 2];
+			for (var i = 0; i < count; i++) {
+				data[i, 0] = pointList[i].x;
+				data[i, 1] = pointList[i].y;
+			}
+			return data;
+		}
+
+		public double[,] ReturnMoonDoubleMatrix(bool up)
+		{
+			generateMoonCloud(up);
+			var data = new double[count, 2];
+			for (var i = 0; i < count; i++) {
+				data[i, 0] = pointList[i].x;
+				data[i, 1] = pointList[i].y;
+			}
+			return data;
+		}
+
 		public double[,] ReturnRawDoubleMatrix()
 		{
 			var data = new double[count, 2];
-			for (var i = 0; i < count; i++)
-			{
+			for (var i = 0; i < count; i++) {
 				data[i, 0] = pointList[i].x;
 				data[i, 1] = pointList[i].y;
 			}

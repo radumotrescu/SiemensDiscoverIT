@@ -6,104 +6,127 @@ using System.Collections.Generic;
 //double valy = angle * Math.Sin(radius) * radius1;
 
 namespace AccordPCA {
-    class PointCloud {
+	class PointCloud {
 
-        /// <summary>
-        /// Structure to be used for specifying a point in a (x,y) coordonate system
-        /// </summary>
-        private struct Point {
-            public double x, y;
-        }
+		/// <summary>
+		/// Structure to be used for specifying a point in a (x,y) coordonate system
+		/// </summary>
+		private struct Point {
+			public double x, y;
+		}
 
-        private double maxRadius;
-        private Random random;
-        private List<Point> pointList;
-        private Point basePoint;
-        private int count;
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="count">The number of points in the cloud</param>
-        /// <param name="maxRadius">The radius of the cloud</param>
-        /// <param name="x">The x coordinate of the base cloud point</param>
-        /// <param name="y">The y coordinate of the base cloud point</param>
-        public PointCloud(int count, int maxRadius, double x, double y)
-        {
-            random = new Random();
-            pointList = new List<Point>();
-            Count = count;
-            MaxRadius = maxRadius;
-            basePoint = new Point { x = x, y = y };
-
-        }
+		private double maxRadius;
+		private Random random;
+		private List<Point> pointList;
+		private Point basePoint;
+		private int count;
 
 
-        /// <summary>
-        /// Represents the radius of the cloud point
-        /// </summary>
-        public double MaxRadius
-        {
-            get { return maxRadius; }
-            set { maxRadius = value; }
-        }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="count">The number of points in the cloud</param>
+		/// <param name="maxRadius">The radius of the cloud</param>
+		/// <param name="x">The x coordinate of the base cloud point</param>
+		/// <param name="y">The y coordinate of the base cloud point</param>
+		public PointCloud(int count, int maxRadius, double x, double y)
+		{
+			random = new Random();
+			pointList = new List<Point>();
+			Count = count;
+			MaxRadius = maxRadius;
+			basePoint = new Point { x = x, y = y };
 
-        /// <summary>
-        /// Represents the number of points in the cloud
-        /// </summary>
-        public int Count
-        {
-            get { return count; }
-            set { count = value; }
-        }
-
-        /// <summary>
-        /// Method to generate the cloud point with uniform spread
-        /// </summary>
-        private void generate()
-        {
-            for (var i = 0; i < count; i++) {
-                var angle = getDouble(0, 1);
-                var radius = getDouble(0, 2 * Math.PI);
+		}
 
 
-                var valx = Math.Sqrt(angle) * Math.Cos(radius) * maxRadius;
-                var valy = Math.Sqrt(angle) * Math.Sin(radius) * maxRadius;
+		/// <summary>
+		/// Represents the radius of the cloud point
+		/// </summary>
+		public double MaxRadius {
+			get { return maxRadius; }
+			set { maxRadius = value; }
+		}
 
-                var newPoint = new Point { x = basePoint.x + valx, y = basePoint.y + valy };
-                pointList.Add(newPoint);
-            }
-        }
+		/// <summary>
+		/// Represents the number of points in the cloud
+		/// </summary>
+		public int Count {
+			get { return count; }
+			set { count = value; }
+		}
+
+		/// <summary>
+		/// Method to generate the cloud point with uniform spread
+		/// </summary>
+		private void generate()
+		{
+			for (var i = 0; i < count; i++) {
+
+				var angle = getDouble(0, 1);
+				var radius = getDouble(0, 2 * Math.PI);
+
+				//var valx = Math.Sqrt(angle) * Math.Cos(radius) * maxRadius;
+				//var valy = Math.Sqrt(angle) * Math.Sin(radius) * maxRadius;
+				//var newPoint = new Point { x = basePoint.x + valx, y = basePoint.y + valy };
+
+				var valx = getDouble(-1, 1);
+				var valy = getDouble(0, 1);
+				double r = 1;
+
+				double rmic = 0.5;
+				//double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
+				double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
+
+				while (valy >= x) {
+
+					valy = getDouble(0, 1);
+				}
+
+				if (valx >= -rmic && valx <= rmic) {
+					double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
+					while (valy <= y) {
+						valy = getDouble(0, 1);
+					}
+				}
 
 
-        /// <summary>
-        /// Method to return the matrix representation of the cloud point
-        /// </summary>
-        /// <returns></returns>
-        public double[,] ReturnDoubleMatrix()
-        {
-            generate();
-            var data = new double[count, 2];
-            for (var i = 0; i < count; i++) {
-                data[i, 0] = pointList[i].x;
-                data[i, 1] = pointList[i].y;
-            }
-            return data;
-
-        }
-
-        /// <summary>
-        /// Method to return a random double value in the specified range
-        /// </summary>
-        /// <param name="min">The lower bound of the random number to be generated</param>
-        /// <param name="max">The upper bound of the random number to be generated</param>
-        /// <returns></returns>
-        private double getDouble(double min, double max)
-        {
-            return min + (random.NextDouble() * (max - min));
-        }
+				var newPoint = new Point { x = valx + basePoint.x, y = -valy + basePoint.y };
+				//
+				//
+				//var newPoint = new Point { x = startX, y = y };
+				pointList.Add(newPoint);
+			}
+		}
 
 
-    }
+		/// <summary>
+		/// Method to return the matrix representation of the cloud point
+		/// </summary>
+		/// <returns></returns>
+		public double[,] ReturnDoubleMatrix()
+		{
+			generate();
+			var data = new double[count, 2];
+			for (var i = 0; i < count; i++) {
+				data[i, 0] = pointList[i].x;
+				data[i, 1] = pointList[i].y;
+			}
+			return data;
+
+		}
+
+		/// <summary>
+		/// Method to return a random double value in the specified range
+		/// </summary>
+		/// <param name="min">The lower bound of the random number to be generated</param>
+		/// <param name="max">The upper bound of the random number to be generated</param>
+		/// <returns></returns>
+		private double getDouble(double min, double max)
+		{
+			return min + (random.NextDouble() * (max - min));
+		}
+
+
+	}
 }
