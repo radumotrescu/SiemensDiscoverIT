@@ -150,7 +150,7 @@ namespace AccordPCA {
 			point[0, 0] = x;
 			point[0, 1] = y;
 
-			Console.WriteLine(Eigenvectors.ToString("+0.00;-0.00"));
+			//Console.WriteLine(Eigenvectors.ToString("+0.00;-0.00"));
 
 			var newCloudAdjusted = point.Subtract(this.mean, 0);
 
