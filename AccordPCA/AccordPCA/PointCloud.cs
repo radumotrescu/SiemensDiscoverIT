@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Accord.Controls;
 
 //double valx = angle * Math.Cos(radius) * radius1;
 //double valy = angle * Math.Sin(radius) * radius1;
@@ -59,46 +59,21 @@ namespace AccordPCA {
 		/// <summary>
 		/// Method to generate the cloud point with uniform spread
 		/// </summary>
-		private void generate()
-		{
-			for (var i = 0; i < count; i++) {
-
-				var angle = getDouble(0, 1);
-				var radius = getDouble(0, 2 * Math.PI);
-
-				//var valx = Math.Sqrt(angle) * Math.Cos(radius) * maxRadius;
-				//var valy = Math.Sqrt(angle) * Math.Sin(radius) * maxRadius;
-				//var newPoint = new Point { x = basePoint.x + valx, y = basePoint.y + valy };
-
-				var valx = getDouble(-1, 1);
-				var valy = getDouble(0, 1);
-				double r = 1;
-
-				double rmic = 0.5;
-				//double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
-				double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
-
-				while (valy >= x) {
-
-					valy = getDouble(0, 1);
-				}
-
-				if (valx >= -rmic && valx <= rmic) {
-					double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
-					while (valy <= y) {
-						valy = getDouble(0, 1);
-					}
-				}
+        private void generateRoundCloud()
+        {
+            for (var i = 0; i < count; i++)
+            {
+                var angle = getDouble(0, 1);
+                var radius = getDouble(0, 2 * Math.PI);
 
 
-				var newPoint = new Point { x = valx + basePoint.x, y = -valy + basePoint.y };
-				//
-				//
-				//var newPoint = new Point { x = startX, y = y };
-				pointList.Add(newPoint);
-			}
-		}
+                var valx = Math.Sqrt(angle) * Math.Cos(radius) * maxRadius;
+                var valy = Math.Sqrt(angle) * Math.Sin(radius) * maxRadius;
 
+                var newPoint = new Point { x = basePoint.x + valx, y = basePoint.y + valy };
+                pointList.Add(newPoint);
+            }
+        }
 
 		/// <summary>
 		/// Method to return the matrix representation of the cloud point
@@ -106,12 +81,13 @@ namespace AccordPCA {
 		/// <returns></returns>
 		public double[,] ReturnDoubleMatrix()
 		{
-			generate();
+			generateRoundCloud();
 			var data = new double[count, 2];
 			for (var i = 0; i < count; i++) {
 				data[i, 0] = pointList[i].x;
 				data[i, 1] = pointList[i].y;
 			}
+            //ScatterplotBox.Show(data);
 			return data;
 
 		}

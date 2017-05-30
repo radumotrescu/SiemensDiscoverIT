@@ -97,23 +97,10 @@ namespace AccordPCA {
                 double r = maxRadius;
 
 				var valx = getDouble(-r, r);
-				var valy = getDouble(0, r);
 				
+				double rmic = r;
+				double valy = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
 
-				double rmic = r/2;
-				double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
-
-				while (valy >= x) {
-
-					valy = getDouble(0, r);
-				}
-
-				if (valx >= -rmic && valx <= rmic) {
-					double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
-					while (valy <= y) {
-						valy = getDouble(0, r);
-					}
-				}
 				Point newPoint;
 				if (up == false) {
 					newPoint = new Point { x = valx + basePoint.x, y = -valy + basePoint.y };
@@ -126,6 +113,48 @@ namespace AccordPCA {
 
 			}
 		}
+
+
+        //private void generateMoonCloud(bool up)
+        //{
+        //    for (var i = 0; i < count; i++)
+        //    {
+
+        //        double r = maxRadius;
+
+        //        var valx = getDouble(-r, r);
+        //        var valy = getDouble(0, r);
+
+
+        //        double rmic = r;
+        //        double x = Math.Sqrt(Math.Pow(r, 2) - Math.Pow(valx, 2));
+
+
+        //        //while (valy >= x) {
+
+        //        //    valy = getDouble(0, r);
+        //        //}
+
+        //        //if (valx >= -rmic && valx <= rmic) {
+        //        //    double y = Math.Sqrt(Math.Pow(rmic, 2) - Math.Pow(valx, 2));
+        //        //    while (valy <= y) {
+        //        //        valy = getDouble(0, r);
+        //        //    }
+        //        //}
+        //        Point newPoint;
+        //        if (up == false)
+        //        {
+        //            newPoint = new Point { x = valx + basePoint.x, y = -valy + basePoint.y };
+        //        }
+        //        else
+        //        {
+        //            newPoint = new Point { x = valx + basePoint.x, y = valy + basePoint.y };
+        //        }
+
+        //        pointList.Add(newPoint);
+
+        //    }
+        //}
 
 		private void generateCircleCloud()
 		{

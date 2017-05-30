@@ -22,6 +22,7 @@ namespace AccordPCA {
 			sw.WriteLine(totalRows + " " + totalColumns);
 			foreach (var pointCloud in pointCloudlist) {
 				var doubles = pointCloud.ReturnDoubleMatrix();
+                //ScatterplotBox.Show("doubles", doubles);
 				var count = pointCloud.Count;
 				for (var i = 0; i < count; i++) {
 					sw.WriteLine(doubles[i, 0] + " " + doubles[i, 1]);
@@ -46,7 +47,7 @@ namespace AccordPCA {
 			string text = sr.ReadToEnd();
 			sr.Close();
 
-			string[] bits = text.Split(new char[] { ' ', '\n','\r' });
+			string[] bits = text.Split(new char[] { ' ', '\n' });
 			List<double[]> doubleBits = new List<double[]>();
 
 			int m;
@@ -72,7 +73,7 @@ namespace AccordPCA {
 			double[,] data;
 			int pointNumber;
 
-			var pointCloud1 = new PointCloud(1000, 2, 5, 5);
+			var pointCloud1 = new PointCloud(10, 2, 3, 3);
 			//var pointCloud2 = new PointCloud(25, 4, 10, 10);
 			//var pointCloud3 = new PointCloud(50, 10, 25, 25);
 			var cloudList = new List<PointCloud>();
@@ -81,11 +82,13 @@ namespace AccordPCA {
 			//cloudList.Add(pointCloud3);
 
 			//WriteDataToFile(cloudList, "data.txt");
-			ReadDataFromFile(out data, out pointNumber, "iris.txt");
+			ReadDataFromFile(out data, out pointNumber, "data.txt");
 
 			var PCA1 = new ObjectPCA(data);
 			PCA1.Compute();
 			PCA1.ShowScatterplots();
+
+            PCA1.ComputeKernel();
 
 			//PCA1.pointRecognition(2, 5);
 

@@ -114,9 +114,55 @@ namespace AccordPCA {
 
             finalData = dataAdjusted.Dot(eigenvectors);
 
-            data2D = finalData.GetColumns(0, 1);
+            // data2D = finalData.GetColumns(0, 1);
 
 
+        }
+
+        public void ComputeKernel()
+        {
+            double gamma = 8.5;
+            double[,] distanceMatrix = new double[0, 0];
+            for (int i = 0; i < finalData.Rows(); i++)
+            {
+                distanceMatrix = distanceMatrix.InsertRow(getDistances(finalData.GetRow(i)[0], finalData.GetRow(i)[1]));
+            }
+            int nr = distanceMatrix.Rows();
+
+            double[,] ones = new double[nr, nr];
+
+            double[,] k = new double[nr, nr];
+            for (int i = 0; i < nr; i++)
+            {
+                for (int j = 0; j < nr; j++)
+                {
+                    double x = (-gamma * distanceMatrix[i, j]);
+                    k[i, j] = Math.Pow(Math.E, x);
+                    ones[i, j] = 1.0 / nr;
+                }
+            }
+
+            var p1 = ones.Dot(k);
+            var p2 = k.Dot(ones);
+
+            var final = k.Subtract(p1).Subtract(p2).Add(p1.Dot(ones));
+
+            var e = new EigenvalueDecomposition(final);
+            var values = e.RealEigenvalues;
+            var vectors = e.Eigenvectors;
+
+            vectors = Matrix.Sort(values, vectors, new GeneralComparer(ComparerDirection.Descending, true));
+
+
+            //Console.WriteLine(distanceMatrix.ToString("+0.00;-0.00"));
+            //Console.WriteLine();
+            //Console.WriteLine(k.ToString("+0.00;-0.00"));
+            //Console.WriteLine();
+            //Console.WriteLine(vectors.ToString("+0.00;-0.00"));
+
+            var kernelData = finalData.Dot(vectors.GetColumns(0, 1));
+
+            ScatterplotBox.Show("kernelData", kernelData);
         }
 
         /// <summary>
@@ -144,8 +190,8 @@ namespace AccordPCA {
         /// </summary>
         public void ShowScatterplots()
         {
-            //ScatterplotBox.Show("Original data", initialData);
-            ScatterplotBox.Show("PCA final data",data2D);
+            ScatterplotBox.Show("Original data", initialData);
+            ScatterplotBox.Show("PCA final data", finalData);
         }
 
         public void pointRecognition(double x, double y)
@@ -171,9 +217,11 @@ namespace AccordPCA {
             var final = new double[S.Rows()];
             var min = Double.MaxValue;
             var minIndex = 0;
-            for (int i = 0; i < final.Rows(); i++) {
+            for (int i = 0; i < final.Rows(); i++)
+            {
                 final[i] = Math.Sqrt(Math.Pow(S[i, 0], 2) + Math.Pow(S[i, 1], 2));
-                if (final[i] < min) {
+                if (final[i] < min)
+                {
                     min = final[i];
                     minIndex = i;
                 }
@@ -183,6 +231,24 @@ namespace AccordPCA {
             Console.WriteLine(finalData[minIndex, 0] + " " + finalData[minIndex, 1]);
             Console.WriteLine(initialData[minIndex, 0] + " " + initialData[minIndex, 1]);
 
+        }
+
+        public double[] getDistances(double x, double y)
+        {
+            var point = new double[1, 2];
+            point[0, 0] = x;
+            point[0, 1] = y;
+
+            var S = finalData.Subtract(point.GetRow(0), 0);
+
+            var final = new double[S.Rows()];
+            for (int i = 0; i < final.Rows(); i++)
+            {
+                final[i] = Math.Sqrt(Math.Pow(S[i, 0], 2) + Math.Pow(S[i, 1], 2));
+
+            }
+
+            return final;
         }
     }
 }

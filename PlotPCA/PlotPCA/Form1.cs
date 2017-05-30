@@ -404,10 +404,10 @@ namespace PlotPCA {
 
             //Console.WriteLine(r1.x + " " + r1.y + " " + r2.x + " " + r2.y + " " + r3.x + " " + r3.y + " ");
 
-            //double x, y;
-            //x = (double)numericUpDown1.Value;
-            //y = (double)numericUpDown2.Value;
-            //var point = PCA.plotPointPCA(x, y);
+            double x, y;
+            x = (double)numericUpDown1.Value;
+            y = (double)numericUpDown2.Value;
+            var p = PCA.plotPointPCA(x, y);
 
             double[,] plottedPoints = new double[0, 2];
             for (int i = 0; i < excludedPointsNumber; i++)
@@ -585,8 +585,8 @@ namespace PlotPCA {
 
 
 
-            var initialPointCloud1 = new PointCloud(cloud1Points, 6, 20, 13);
-            var initialPointCloud2 = new PointCloud(cloud2Points, 6, 15, 15);
+            var initialPointCloud1 = new PointCloud(cloud1Points, 15, 29, 13);
+            var initialPointCloud2 = new PointCloud(cloud2Points, 15, 15, 27);
 
 
             var csv = new StreamWriter("cloud.csv");
@@ -605,11 +605,10 @@ namespace PlotPCA {
 
             //double[,] data1;
             //double[,] data2;
-            //double[,] data3;
+
 
             //ReadDataFromFile(out data1, "cloud1.txt");
             //ReadDataFromFile(out data2, "cloud2.txt");
-            //ReadDataFromFile(out data3, "cloud3.txt");
 
 
             var list = new List<double[,]>();
@@ -617,31 +616,40 @@ namespace PlotPCA {
             list.Add(data2);
             var allData = combineData(list, cloud1Points + cloud2Points);
 
-
-            PCA = new ObjectPCA(allData);
-            PCA.Compute();
-
-
-            var finalData1 = PCA.FinalData.Get(0, cloud1Points, 0, 2);
-            var finalData2 = PCA.FinalData.Get(cloud1Points, cloud1Points + cloud2Points, 0, 2);
-
-
             var initialCloud1 = new PointPairList();
             var initialCloud2 = new PointPairList();
 
-            var finalCloud1 = new PointPairList();
-            var finalCloud2 = new PointPairList();
-
             pointPairListInitialisation(initialCloud1, data1);
             pointPairListInitialisation(initialCloud2, data2);
-
-            pointPairListInitialisation(finalCloud1, finalData1);
-            pointPairListInitialisation(finalCloud2, finalData2);
 
             InitialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
             InitialCloud1Points.Line.IsVisible = false;
             InitialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
             InitialCloud2Points.Line.IsVisible = false;
+
+            PCA = new ObjectPCA(allData);
+            PCA.Gamma = (double) numericUpDown5.Value;
+            PCA.Compute();
+            PCA.ComputeKernel();
+
+
+
+
+            var finalData1 = PCA.KernelData.Get(0, cloud1Points, 0, 2);
+            var finalData2 = PCA.KernelData.Get(cloud1Points, cloud1Points + cloud2Points, 0, 2);
+
+
+          
+
+            var finalCloud1 = new PointPairList();
+            var finalCloud2 = new PointPairList();
+
+           
+
+            pointPairListInitialisation(finalCloud1, finalData1);
+            pointPairListInitialisation(finalCloud2, finalData2);
+
+
 
             FinalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
             FinalCloud1Points.Line.IsVisible = false;
@@ -679,11 +687,10 @@ namespace PlotPCA {
 
             //double[,] data1;
             //double[,] data2;
-            //double[,] data3;
 
             //ReadDataFromFile(out data1, "cloud1.txt");
             //ReadDataFromFile(out data2, "cloud2.txt");
-            //ReadDataFromFile(out data3, "cloud3.txt");
+
 
 
             var list = new List<double[,]>();
@@ -693,11 +700,13 @@ namespace PlotPCA {
 
 
             PCA = new ObjectPCA(allData);
+            PCA.Gamma = (double)numericUpDown5.Value;
             PCA.Compute();
+            PCA.ComputeKernel();
 
 
-            var finalData1 = PCA.FinalData.Get(0, cloud1Points, 0, 2);
-            var finalData2 = PCA.FinalData.Get(cloud1Points, cloud1Points + cloud2Points, 0, 2);
+            var finalData1 = PCA.KernelData.Get(0, cloud1Points, 0, 2);
+            var finalData2 = PCA.KernelData.Get(cloud1Points, cloud1Points + cloud2Points, 0, 2);
 
 
             var initialCloud1 = new PointPairList();
