@@ -15,10 +15,59 @@ using Accord.Math;
 namespace PlotPCA {
     public partial class Form1 : Form {
 
+        GraphPane myPaneOriginalData;
+        GraphPane myPaneFinalData;
+        GraphPane myPaneOriginalLine;
+        GraphPane myPaneFinalLine;
+
+        ObjectPCA PCA { get; set; }
+
+        int cloud1Points { get; set; }
+        int cloud2Points { get; set; }
+        int cloud3Points { get; set; }
+
+        LineItem InitialCloud1Points { get; set; }
+        LineItem InitialCloud2Points { get; set; }
+        LineItem InitialCloud3Points { get; set; }
+
+        LineItem FinalCloud1Points { get; set; }
+        LineItem FinalCloud2Points { get; set; }
+        LineItem FinalCloud3Points { get; set; }
+
+        public Form1()
+        {
+            InitializeComponent();
+
+            myPaneOriginalData = zedGraphControl1.GraphPane;
+            myPaneOriginalData.Title.Text = "PCA Initial Data";
+            myPaneOriginalData.XAxis.Title.Text = "X Coordinates";
+            myPaneOriginalData.YAxis.Title.Text = "Y Coordinates";
+            zedGraphControl1.IsShowPointValues = true;
+
+            myPaneFinalData = zedGraphControl2.GraphPane;
+            myPaneFinalData.Title.Text = "PCA Final Data";
+            myPaneFinalData.XAxis.Title.Text = "X Coordinates";
+            myPaneFinalData.YAxis.Title.Text = "Y Coordinates";
+            zedGraphControl2.IsShowPointValues = true;
+
+            myPaneOriginalLine = zedGraphControl3.GraphPane;
+            myPaneOriginalLine.Title.Text = "PCA Original Line Spam";
+            myPaneOriginalLine.XAxis.Title.Text = "X Coordinates";
+            myPaneOriginalLine.YAxis.Title.Text = "Y Coordinates";
+            zedGraphControl3.IsShowPointValues = true;
+
+            myPaneFinalLine = zedGraphControl4.GraphPane;
+            myPaneFinalLine.Title.Text = "PCA Final Line Spam";
+            myPaneFinalLine.XAxis.Title.Text = "X Coordinates";
+            myPaneFinalLine.YAxis.Title.Text = "Y Coordinates";
+            zedGraphControl4.IsShowPointValues = true;
+
+        }
+
+        #region utilfunctions
 
         static double[,] WriteDataToFile(PointCloud pointCloud, string filePath, CsvHelper.CsvWriter csvWriter, int cloudIndex, string type, bool up = true)
         {
-
 
             StreamWriter sw = new StreamWriter(filePath);
             int totalRows = pointCloud.Count;
@@ -34,7 +83,8 @@ namespace PlotPCA {
             else if (type.Equals("moon"))
                 doubles = pointCloud.ReturnMoonDoubleMatrix(up);
 
-            for (int i = 0; i < totalRows; i++) {
+            for (int i = 0; i < totalRows; i++)
+            {
 
                 sw.WriteLine(doubles[i, 0] + " " + doubles[i, 1]);
                 csvWriter.WriteField(doubles[i, 0] + ";" + doubles[i, 1] + ";" + cloudIndex);
@@ -64,8 +114,10 @@ namespace PlotPCA {
             data = new double[count, m];
 
             int k = 2;
-            for (var i = 0; i < count; i++) {
-                for (var j = 0; j < m; j++) {
+            for (var i = 0; i < count; i++)
+            {
+                for (var j = 0; j < m; j++)
+                {
                     double x;
                     double.TryParse(bits[k++], out x);
                     data[i, j] = x;
@@ -92,8 +144,10 @@ namespace PlotPCA {
             data = new double[count, m];
 
             int k = 2;
-            for (var i = 0; i < count; i++) {
-                for (var j = 0; j < m; j++) {
+            for (var i = 0; i < count; i++)
+            {
+                for (var j = 0; j < m; j++)
+                {
                     double x;
                     double.TryParse(bits[k++], out x);
                     data[i, j] = x;
@@ -101,55 +155,20 @@ namespace PlotPCA {
             }
         }
 
-
         static void pointPairListInitialisation(PointPairList cloudPoints, double[,] point)
         {
             for (int i = 0; i < point.Rows(); i++)
                 cloudPoints.Add(point.GetRow(i)[0], point.GetRow(i)[1]);
         }
 
-        GraphPane myPaneOriginalData;
-        GraphPane myPaneFinalData;
-        GraphPane myPaneOriginalLine;
-        GraphPane myPaneFinalLine;
-        public Form1()
-        {
-            InitializeComponent();
-
-            myPaneOriginalData = zedGraphControl1.GraphPane;
-            myPaneOriginalData.Title.Text = "PCA Initial Data";
-            myPaneOriginalData.XAxis.Title.Text = "X Coordinates";
-            myPaneOriginalData.YAxis.Title.Text = "Y Coordinates";
-            zedGraphControl1.IsShowPointValues = true;
-
-            myPaneFinalData = zedGraphControl2.GraphPane;
-            myPaneFinalData.Title.Text = "PCA Final Data";
-            myPaneFinalData.XAxis.Title.Text = "X Coordinates";
-            myPaneFinalData.YAxis.Title.Text = "Y Coordinates";
-            zedGraphControl2.IsShowPointValues = true;
-
-            myPaneOriginalLine = zedGraphControl3.GraphPane;
-            myPaneOriginalLine.Title.Text = "PCA Original Line Spam";
-            myPaneOriginalLine.XAxis.Title.Text = "X Coordinates";
-            myPaneOriginalLine.YAxis.Title.Text = "Y Coordinates";
-            zedGraphControl3.IsShowPointValues = true;
-
-            myPaneFinalLine = zedGraphControl4.GraphPane;
-            myPaneFinalLine.Title.Text = "PCA Final Line Spam";
-            myPaneFinalLine.XAxis.Title.Text = "X Coordinates";
-            myPaneFinalLine.YAxis.Title.Text = "Y Coordinates";
-            zedGraphControl4.IsShowPointValues = true;
-
-
-
-        }
-
         static double[,] combineData(List<double[,]> dataList, int count)
         {
             double[,] data = new double[0, 2];
             int k = 0;
-            foreach (var dataSet in dataList) {
-                for (int i = 0; i < dataSet.Rows(); i++) {
+            foreach (var dataSet in dataList)
+            {
+                for (int i = 0; i < dataSet.Rows(); i++)
+                {
                     data = data.InsertRow(dataSet.GetRow(i), k++);
                 }
             }
@@ -165,7 +184,8 @@ namespace PlotPCA {
         {
             min = double.MaxValue;
             max = double.MinValue;
-            for (int i = 0; i < data.Count(); i++) {
+            for (int i = 0; i < data.Count(); i++)
+            {
                 if (data[i] < min)
                     min = data[i];
                 else if (data[i] > max)
@@ -191,36 +211,54 @@ namespace PlotPCA {
 
         private bool inCloud(double[,] cloud, double[] point)
         {
-            for (int i = 0; i < cloud.Rows(); i++) {
+            for (int i = 0; i < cloud.Rows(); i++)
+            {
                 if (cloud[i, 0] == point[0] && cloud[i, 1] == point[1])
                     return true;
             }
             return false;
         }
 
-        private double[,] getRandomPoints(double[,] pointList, int pointsNumber)
+        private bool indexExists(int[] index, int x)
         {
-            double[,] data = new double[pointsNumber, 2];
-
-            Random rand = new Random();
-            for (int i = 0; i < pointsNumber; i++) {
-                int nr = rand.Next(0, pointList.Rows());
-                data[i, 0] = pointList[nr, 0];
-                data[i, 1] = pointList[nr, 1];
-                //Console.WriteLine(data[i, 0] + " " + data[i, 1] + " " + nr);
-            }
-            //Console.WriteLine(data.ToString("+0.0;-0.0"));
-            return data;
+            for (int i = 0; i < index.Length; i++)
+                if (index[i] == x)
+                    return true;
+            return false;
         }
 
-        private double[,] excludePoints(double[,] initialPointList, double[,] toRemovePoints)
+        private int[] getRandomIndexes(double[,] pointList, int pointsNumber)
+        {
+            int[] indexes = new int[pointsNumber];
+
+            Random rand = new Random();
+
+            for (int i = 0; i < pointsNumber; i++)
+            {
+                int nr;
+                do
+                {
+                    nr = rand.Next(0, pointList.Rows());
+                } while (indexExists(indexes, nr));
+
+                indexes[i] = nr;
+            }
+
+            return indexes;
+        }
+
+        private double[,] excludePointsByIndex(double[,] initialPointList, int[] indexes)
         {
             int k = 0;
             double[,] data = new double[0, 2];
-            for (int i = 0; i < initialPointList.Rows(); i++) {
+
+            for (int i = 0; i < initialPointList.Rows(); i++)
+            {
                 bool exists = false;
-                for (int j = 0; j < toRemovePoints.Rows(); j++) {
-                    if (Math.Round(initialPointList[i, 0], 2) == Math.Round(toRemovePoints[j, 0], 2) && Math.Round(initialPointList[i, 1], 2) == Math.Round(toRemovePoints[j, 1], 2)) {
+                for (int j = 0; j < indexes.Length; j++)
+                {
+                    if (indexes[j] == i)
+                    {
                         k++;
                         exists = true;
                         break;
@@ -229,98 +267,127 @@ namespace PlotPCA {
                 if (exists == false)
                     data = data.InsertRow(initialPointList.GetRow(i));
             }
-
             return data;
-
         }
+
+        private void initialiseCloudPoints()
+        {
+            cloud1Points = (int)numericUpDown3.Value;
+            cloud2Points = (int)numericUpDown4.Value;
+            cloud3Points = (int)numericUpDown5.Value;
+        }
+
+        private void clearPlots()
+        {
+            myPaneOriginalData.CurveList.Clear();
+            myPaneFinalData.CurveList.Clear();
+            myPaneFinalLine.CurveList.Clear();
+            myPaneOriginalLine.CurveList.Clear();
+        }
+
+        private void replot()
+        {
+            myPaneOriginalData.AxisChange();
+            zedGraphControl1.Invalidate();
+
+            myPaneFinalData.AxisChange();
+            zedGraphControl2.Invalidate();
+
+            myPaneOriginalLine.AxisChange();
+            zedGraphControl3.Invalidate();
+
+            myPaneFinalLine.AxisChange();
+            zedGraphControl4.Invalidate();
+        }
+
+        #endregion
 
         private void button1_Click(object sender, EventArgs e)
         {
 
             Console.Clear();
 
-            int cloud1points = 100;
-            int cloud2points = 100;
-            int cloud3points = 100;
+            initialiseCloudPoints();
 
-            myPaneOriginalData.CurveList.Clear();
-            myPaneFinalData.CurveList.Clear();
-            myPaneFinalLine.CurveList.Clear();
-            myPaneOriginalLine.CurveList.Clear();
+            clearPlots();
 
-            var initialPointCloud1 = new PointCloud(cloud1points, 5, 2, 2);
-            var initialPointCloud2 = new PointCloud(cloud2points, 10, 15, 15);
-            var initialPointCloud3 = new PointCloud(cloud3points, 10, 30, 30);
+            var initialPointCloud1 = new PointCloud(cloud1Points, 5, 2, 2);
+            var initialPointCloud2 = new PointCloud(cloud2Points, 10, 15, 15);
+            var initialPointCloud3 = new PointCloud(cloud3Points, 10, 30, 30);
 
-            //var csv = new StreamWriter("cloud.csv");
-            //var csvWriter = new CsvHelper.CsvWriter(csv);
-            //csvWriter.WriteField("X;Y;cloud index");
-            //csvWriter.NextRecord();
+            var csv = new StreamWriter("cloud.csv");
+            var csvWriter = new CsvHelper.CsvWriter(csv);
+            csvWriter.WriteField("X;Y;cloud index");
+            csvWriter.NextRecord();
 
-            //var data1 = WriteDataToFile(initialPointCloud1, "cloud1.txt", csvWriter, 1, "cloud");
-            //var data2 = WriteDataToFile(initialPointCloud2, "cloud2.txt", csvWriter, 2, "cloud");
-            //var data3 = WriteDataToFile(initialPointCloud3, "cloud3.txt", csvWriter, 3, "cloud");
+            var data1 = WriteDataToFile(initialPointCloud1, "cloud1.txt", csvWriter, 1, "cloud");
+            var data2 = WriteDataToFile(initialPointCloud2, "cloud2.txt", csvWriter, 2, "cloud");
+            var data3 = WriteDataToFile(initialPointCloud3, "cloud3.txt", csvWriter, 3, "cloud");
 
-            //csv.Flush();
-            //csv.Close();
+            csv.Flush();
+            csv.Close();
 
 
 
-            double[,] data1;
-            double[,] data2;
-            double[,] data3;
+            //double[,] data1;
+            //double[,] data2;
+            //double[,] data3;
 
-            ReadDataFromFile(out data1, "cloud1.txt");
-            ReadDataFromFile(out data2, "cloud2.txt");
-            ReadDataFromFile(out data3, "cloud3.txt");
+            //ReadDataFromFile(out data1, "cloud1.txt");
+            //ReadDataFromFile(out data2, "cloud2.txt");
+            //ReadDataFromFile(out data3, "cloud3.txt");
 
 
             var list = new List<double[,]>();
             list.Add(data1);
             list.Add(data2);
             list.Add(data3);
-            var allData = combineData(list, cloud1points + cloud2points + cloud3points);
+            var allData = combineData(list, cloud1Points + cloud2Points + cloud3Points);
 
-
+            var bigAllData = new double[allData.Rows(), allData.Columns()];
+            Array.Copy(allData, bigAllData, allData.Length);
 
             int excludedPointsNumber = 30;
-            var a = getRandomPoints(allData, excludedPointsNumber);
-            allData = excludePoints(allData, a);
+
+            var indexes = getRandomIndexes(allData, excludedPointsNumber);
+            allData = excludePointsByIndex(allData, indexes);
+
 
             int[] indexesInitial = new int[excludedPointsNumber];
-            for (int i = 0; i < excludedPointsNumber; i++) {
-                if (inCloud(data1, a.GetRow(i))) {
+            for (int i = 0; i < excludedPointsNumber; i++)
+            {
+                int j = indexes[i];
+                var point = bigAllData.GetRow(j);
+                if (inCloud(data1, point))
+                {
                     indexesInitial[i] = 1;
-                    cloud1points--;
+                    cloud1Points--;
                 }
-                else if (inCloud(data2, a.GetRow(i))) {
+                else if (inCloud(data2, point))
+                {
                     indexesInitial[i] = 2;
-                    cloud2points--;
+                    cloud2Points--;
                 }
-                else if (inCloud(data3, a.GetRow(i))) {
+                else if (inCloud(data3, point))
+                {
                     indexesInitial[i] = 3;
-                    cloud3points--;
+                    cloud3Points--;
                 }
 
             }
-            Console.WriteLine(a.ToString("+0.0;-0.0"));
+            //Console.WriteLine(a.ToString("+0.0;-0.0"));
             Console.WriteLine(indexesInitial.ToString("+0.0;-0.0"));
 
-            var obj4 = new ObjectPCA(allData);
-            obj4.Compute();
-            //Console.WriteLine();
-            //Console.WriteLine();
-            //Console.WriteLine(obj4.FinalData.ToString("+0.0;-0.0"));
-            //Console.WriteLine();
+            PCA = new ObjectPCA(allData);
+            PCA.Compute();
 
-            //Console.WriteLine(obj4.Eigenvectors.ToString("+0.0;-0.0"));
-            //Console.WriteLine(obj4.Eigenvalues.ToString("+0.0;-0.0"));
-            //Console.WriteLine();
+            var cloud1Range = new Range { x = 0, y = cloud1Points };
+            var cloud2Range = new Range { x = cloud1Points, y = cloud1Points + cloud2Points };
+            var cloud3Range = new Range { x = cloud2Range.y, y = cloud2Range.y + cloud3Points };
 
-            var finalData1 = obj4.FinalData.Get(0, cloud1points, 0, 2);
-            var finalData2 = obj4.FinalData.Get(cloud1points, cloud1points + cloud2points, 0, 2);
-            var finalData3 = obj4.FinalData.Get(cloud1points + cloud2points, cloud1points + cloud2points + cloud3points, 0, 2);
-
+            var finalData1 = PCA.FinalData.Get((int)cloud1Range.x, (int)cloud1Range.y, 0, 2);
+            var finalData2 = PCA.FinalData.Get((int)cloud2Range.x, (int)cloud2Range.y, 0, 2);
+            var finalData3 = PCA.FinalData.Get((int)cloud3Range.x, (int)cloud3Range.y, 0, 2);
 
             double min1, max1, min2, max2, min3, max3;
 
@@ -340,21 +407,26 @@ namespace PlotPCA {
             //double x, y;
             //x = (double)numericUpDown1.Value;
             //y = (double)numericUpDown2.Value;
-            //var point = obj4.plotPointPCA(x, y);
+            //var point = PCA.plotPointPCA(x, y);
 
             double[,] plottedPoints = new double[0, 2];
-            for (int i = 0; i < excludedPointsNumber; i++) {
-                plottedPoints = plottedPoints.InsertRow(obj4.plotPointPCA(a.GetRow(i)[0], a.GetRow(i)[1]).GetRow(0));
+            for (int i = 0; i < excludedPointsNumber; i++)
+            {
+                plottedPoints = plottedPoints.InsertRow(PCA.plotPointPCA(bigAllData.GetRow(indexes[i])[0], bigAllData.GetRow(indexes[i])[1]).GetRow(0));
             }
             int[] indexesFinal = new int[excludedPointsNumber];
-            for (int i = 0; i < excludedPointsNumber; i++) {
-                if (checkPoint(r1, plottedPoints[i, 0])) {
+            for (int i = 0; i < excludedPointsNumber; i++)
+            {
+                if (checkPoint(r1, plottedPoints[i, 0]))
+                {
                     indexesFinal[i] = 1;
                 }
-                else if (checkPoint(r2, plottedPoints[i, 0])) {
+                else if (checkPoint(r2, plottedPoints[i, 0]))
+                {
                     indexesFinal[i] = 2;
                 }
-                else if (checkPoint(r3, plottedPoints[i, 0])) {
+                else if (checkPoint(r3, plottedPoints[i, 0]))
+                {
                     indexesFinal[i] = 3;
                 }
             }
@@ -364,7 +436,8 @@ namespace PlotPCA {
 
 
             int differentPoints = 0;
-            for (int i = 0; i < excludedPointsNumber; i++) {
+            for (int i = 0; i < excludedPointsNumber; i++)
+            {
                 if (indexesInitial[i] != indexesFinal[i])
                     differentPoints++;
             }
@@ -382,20 +455,23 @@ namespace PlotPCA {
             //else
             //    label1.Text = "None";
 
-
+            #region lines
 
             double[,] initialLineData1 = new double[data1.Rows(), 2];
-            for (int i = 0; i < data1.Rows(); i++) {
+            for (int i = 0; i < data1.Rows(); i++)
+            {
                 initialLineData1[i, 0] = data1[i, 0];
                 initialLineData1[i, 1] = 1;
             }
             double[,] initialLineData2 = new double[data2.Rows(), 2];
-            for (int i = 0; i < data2.Rows(); i++) {
+            for (int i = 0; i < data2.Rows(); i++)
+            {
                 initialLineData2[i, 0] = data2[i, 0];
                 initialLineData2[i, 1] = 1;
             }
             double[,] initialLineData3 = new double[data3.Rows(), 2];
-            for (int i = 0; i < data3.Rows(); i++) {
+            for (int i = 0; i < data3.Rows(); i++)
+            {
                 initialLineData3[i, 0] = data3[i, 0];
                 initialLineData3[i, 1] = 1;
             }
@@ -418,17 +494,20 @@ namespace PlotPCA {
 
 
             double[,] finalLineData1 = new double[finalData1.Rows(), 2];
-            for (int i = 0; i < finalData1.Rows(); i++) {
+            for (int i = 0; i < finalData1.Rows(); i++)
+            {
                 finalLineData1[i, 0] = finalData1[i, 0];
                 finalLineData1[i, 1] = 1;
             }
             double[,] finalLineData2 = new double[finalData2.Rows(), 2];
-            for (int i = 0; i < finalData2.Rows(); i++) {
+            for (int i = 0; i < finalData2.Rows(); i++)
+            {
                 finalLineData2[i, 0] = finalData2[i, 0];
                 finalLineData2[i, 1] = 1;
             }
             double[,] finalLineData3 = new double[finalData3.Rows(), 2];
-            for (int i = 0; i < finalData3.Rows(); i++) {
+            for (int i = 0; i < finalData3.Rows(); i++)
+            {
                 finalLineData3[i, 0] = finalData3[i, 0];
                 finalLineData3[i, 1] = 1;
             }
@@ -449,9 +528,7 @@ namespace PlotPCA {
             finalLine3Points.Line.IsVisible = false;
 
 
-
-
-
+            #endregion
 
             var initialCloud1 = new PointPairList();
             var initialCloud2 = new PointPairList();
@@ -462,17 +539,6 @@ namespace PlotPCA {
             pointPairListInitialisation(initialCloud2, data2);
             pointPairListInitialisation(initialCloud3, data3);
 
-            LineItem initialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
-            initialCloud1Points.Line.IsVisible = false;
-            LineItem initialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
-            initialCloud2Points.Line.IsVisible = false;
-            LineItem initialCloud3Points = myPaneOriginalData.AddCurve("Cloud3", initialCloud3, Color.Green, SymbolType.Star);
-            initialCloud3Points.Line.IsVisible = false;
-
-            //LineItem initialPoint = myPaneOriginalData.AddCurve("Point", new double[] { x }, new double[] { y }, Color.Brown, SymbolType.Triangle);
-            //initialPoint.Line.IsVisible = false;
-
-
             var finalCloud1 = new PointPairList();
             var finalCloud2 = new PointPairList();
             var finalCloud3 = new PointPairList();
@@ -482,44 +548,45 @@ namespace PlotPCA {
             pointPairListInitialisation(finalCloud2, finalData2);
             pointPairListInitialisation(finalCloud3, finalData3);
 
-            //finalCloud1.Add(new PointPair(point[0, 0], point[1, 0]));
+            
+            InitialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
+            InitialCloud1Points.Line.IsVisible = false;
+            InitialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
+            InitialCloud2Points.Line.IsVisible = false;
+            InitialCloud3Points = myPaneOriginalData.AddCurve("Cloud3", initialCloud3, Color.Green, SymbolType.Star);
+            InitialCloud3Points.Line.IsVisible = false;
 
-            LineItem finalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
-            finalCloud1Points.Line.IsVisible = false;
-            LineItem finalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
-            finalCloud2Points.Line.IsVisible = false;
-            LineItem finalCloud3Points = myPaneFinalData.AddCurve("Cloud3", finalCloud3, Color.Green, SymbolType.Star);
-            finalCloud3Points.Line.IsVisible = false;
+            FinalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
+            FinalCloud1Points.Line.IsVisible = false;
+            FinalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
+            FinalCloud2Points.Line.IsVisible = false;
+            FinalCloud3Points = myPaneFinalData.AddCurve("Cloud3", finalCloud3, Color.Green, SymbolType.Star);
+            FinalCloud3Points.Line.IsVisible = false;
+
+
+            replot();
+
+            //LineItem initialPoint = myPaneOriginalData.AddCurve("Point", new double[] { x }, new double[] { y }, Color.Brown, SymbolType.Triangle);
+            //initialPoint.Line.IsVisible = false;
+            //finalCloud1.Add(new PointPair(point[0, 0], point[1, 0]));
 
             //LineItem finalPoint = myPaneFinalData.AddCurve("Point", point.GetRow(0), point.GetRow(1), Color.Brown, SymbolType.Triangle);
             //finalPoint.Line.IsVisible = false;
 
-            myPaneOriginalData.AxisChange();
-            zedGraphControl1.Invalidate();
-
-            myPaneFinalData.AxisChange();
-            zedGraphControl2.Invalidate();
-
-            myPaneOriginalLine.AxisChange();
-            zedGraphControl3.Invalidate();
-
-            myPaneFinalLine.AxisChange();
-            zedGraphControl4.Invalidate();
 
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            int cloud1points = 500;
-            int cloud2points = 500;
+            clearPlots();
+
+            initialiseCloudPoints();
 
 
-            myPaneOriginalData.CurveList.Clear();
-            myPaneFinalData.CurveList.Clear();
 
-            var initialPointCloud1 = new PointCloud(cloud1points, 6, 20, 13);
-            var initialPointCloud2 = new PointCloud(cloud2points, 6, 15, 15);
+            var initialPointCloud1 = new PointCloud(cloud1Points, 6, 20, 13);
+            var initialPointCloud2 = new PointCloud(cloud2Points, 6, 15, 15);
 
 
             var csv = new StreamWriter("cloud.csv");
@@ -548,65 +615,52 @@ namespace PlotPCA {
             var list = new List<double[,]>();
             list.Add(data1);
             list.Add(data2);
-            var allData = combineData(list, cloud1points + cloud2points);
+            var allData = combineData(list, cloud1Points + cloud2Points);
 
 
-            var obj4 = new ObjectPCA(allData);
-            obj4.Compute();
+            PCA = new ObjectPCA(allData);
+            PCA.Compute();
 
 
-            var finalData1 = obj4.FinalData.Get(0, cloud1points, 0, 2);
-            var finalData2 = obj4.FinalData.Get(cloud1points, cloud1points + cloud2points, 0, 2);
+            var finalData1 = PCA.FinalData.Get(0, cloud1Points, 0, 2);
+            var finalData2 = PCA.FinalData.Get(cloud1Points, cloud1Points + cloud2Points, 0, 2);
 
 
             var initialCloud1 = new PointPairList();
             var initialCloud2 = new PointPairList();
 
+            var finalCloud1 = new PointPairList();
+            var finalCloud2 = new PointPairList();
 
             pointPairListInitialisation(initialCloud1, data1);
             pointPairListInitialisation(initialCloud2, data2);
 
-
-            LineItem initialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
-            initialCloud1Points.Line.IsVisible = false;
-            LineItem initialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
-            initialCloud2Points.Line.IsVisible = false;
-
-
-
-            var finalCloud1 = new PointPairList();
-            var finalCloud2 = new PointPairList();
-
-
-
             pointPairListInitialisation(finalCloud1, finalData1);
             pointPairListInitialisation(finalCloud2, finalData2);
 
+            InitialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
+            InitialCloud1Points.Line.IsVisible = false;
+            InitialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
+            InitialCloud2Points.Line.IsVisible = false;
 
+            FinalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
+            FinalCloud1Points.Line.IsVisible = false;
+            FinalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
+            FinalCloud2Points.Line.IsVisible = false;
 
-            LineItem finalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
-            finalCloud1Points.Line.IsVisible = false;
-            LineItem finalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
-            finalCloud2Points.Line.IsVisible = false;
-
-            myPaneOriginalData.AxisChange();
-            zedGraphControl1.Invalidate();
-
-            myPaneFinalData.AxisChange();
-            zedGraphControl2.Invalidate();
+            replot();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            int cloud1points = 200;
-            int cloud2points = 500;
+            clearPlots();
+
+            initialiseCloudPoints();
 
 
-            myPaneOriginalData.CurveList.Clear();
-            myPaneFinalData.CurveList.Clear();
 
-            var initialPointCloud1 = new PointCloud(cloud1points, 2, 15, 15);
-            var initialPointCloud2 = new PointCloud(cloud2points, 6, 15, 15);
+            var initialPointCloud1 = new PointCloud(cloud1Points, 2, 15, 15);
+            var initialPointCloud2 = new PointCloud(cloud2Points, 6, 15, 15);
 
 
             var csv = new StreamWriter("cloud.csv");
@@ -635,65 +689,51 @@ namespace PlotPCA {
             var list = new List<double[,]>();
             list.Add(data1);
             list.Add(data2);
-            var allData = combineData(list, cloud1points + cloud2points);
+            var allData = combineData(list, cloud1Points + cloud2Points);
 
 
-            var obj4 = new ObjectPCA(allData);
-            obj4.Compute();
+            PCA = new ObjectPCA(allData);
+            PCA.Compute();
 
 
-            var finalData1 = obj4.FinalData.Get(0, cloud1points, 0, 2);
-            var finalData2 = obj4.FinalData.Get(cloud1points, cloud1points + cloud2points, 0, 2);
+            var finalData1 = PCA.FinalData.Get(0, cloud1Points, 0, 2);
+            var finalData2 = PCA.FinalData.Get(cloud1Points, cloud1Points + cloud2Points, 0, 2);
 
 
             var initialCloud1 = new PointPairList();
             var initialCloud2 = new PointPairList();
 
-
-            pointPairListInitialisation(initialCloud1, data1);
-            pointPairListInitialisation(initialCloud2, data2);
-
-
-            LineItem initialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
-            initialCloud1Points.Line.IsVisible = false;
-            LineItem initialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
-            initialCloud2Points.Line.IsVisible = false;
-
-
-
             var finalCloud1 = new PointPairList();
             var finalCloud2 = new PointPairList();
 
 
+            pointPairListInitialisation(initialCloud1, data1);
+            pointPairListInitialisation(initialCloud2, data2);
 
             pointPairListInitialisation(finalCloud1, finalData1);
             pointPairListInitialisation(finalCloud2, finalData2);
 
+            InitialCloud1Points = myPaneOriginalData.AddCurve("Cloud1", initialCloud1, Color.Red, SymbolType.Circle);
+            InitialCloud1Points.Line.IsVisible = false;
+            InitialCloud2Points = myPaneOriginalData.AddCurve("Cloud2", initialCloud2, Color.Blue, SymbolType.Diamond);
+            InitialCloud2Points.Line.IsVisible = false;
 
+            FinalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
+            FinalCloud1Points.Line.IsVisible = false;
+            FinalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
+            FinalCloud2Points.Line.IsVisible = false;
 
-            LineItem finalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
-            finalCloud1Points.Line.IsVisible = false;
-            LineItem finalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
-            finalCloud2Points.Line.IsVisible = false;
-
-            myPaneOriginalData.AxisChange();
-            zedGraphControl1.Invalidate();
-
-            myPaneFinalData.AxisChange();
-            zedGraphControl2.Invalidate();
+            replot();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
+
+            clearPlots();
+
             int cloud1points = 50;
             int cloud2points = 50;
             int cloud3points = 50;
-
-            myPaneOriginalData.CurveList.Clear();
-            myPaneFinalData.CurveList.Clear();
-            myPaneFinalLine.CurveList.Clear();
-            myPaneOriginalLine.CurveList.Clear();
-
 
 
             double[,] data1;
@@ -710,94 +750,103 @@ namespace PlotPCA {
             var allData = combineData(list, cloud1points + cloud2points + cloud3points);
 
 
-            var obj4 = new ObjectPCA(allData);
-            obj4.Compute();
+            PCA = new ObjectPCA(allData);
+            PCA.Compute();
 
 
-            var finalData1 = obj4.Data2D.Get(0, cloud1points, 0, 2);
-            var finalData2 = obj4.Data2D.Get(cloud1points, cloud1points + cloud2points, 0, 2);
-            var finalData3 = obj4.Data2D.Get(cloud1points + cloud2points, cloud1points + cloud2points + cloud3points, 0, 2);
+            var finalData1 = PCA.Data2D.Get(0, cloud1points, 0, 2);
+            var finalData2 = PCA.Data2D.Get(cloud1points, cloud1points + cloud2points, 0, 2);
+            var finalData3 = PCA.Data2D.Get(cloud1points + cloud2points, cloud1points + cloud2points + cloud3points, 0, 2);
 
 
-            double min1, max1, min2, max2, min3, max3;
+            //double min1, max1, min2, max2, min3, max3;
 
-            getMinMax(finalData1.GetColumn(0), out min1, out max1);
-            getMinMax(finalData2.GetColumn(0), out min2, out max2);
-            getMinMax(finalData3.GetColumn(0), out min3, out max3);
+            //getMinMax(finalData1.GetColumn(0), out min1, out max1);
+            //getMinMax(finalData2.GetColumn(0), out min2, out max2);
+            //getMinMax(finalData3.GetColumn(0), out min3, out max3);
 
-            Range r1 = new Range(), r2 = new Range(), r3 = new Range();
-            double mean1 = min2 - (max1 + min2) / 2;
-            double mean2 = min3 - (max2 + min3) / 2;
-            r1.newRange(min1 - mean1, max1 + mean1);
-            r2.newRange(min2 - mean1, max2 + mean2);
-            r3.newRange(min3 - mean2, max3 + mean2);
-
-
-
-            double x, y;
-            x = (double)numericUpDown1.Value;
-            y = (double)numericUpDown2.Value;
-            var point = obj4.plotPointPCA(x, y);
-
-            if (checkPoint(r1, point[0, 0])) {
-                label1.Text = "Cloud1";
-            }
-            else if (checkPoint(r2, point[0, 0])) {
-                label1.Text = "Cloud2";
-            }
-            else if (checkPoint(r3, point[0, 0])) {
-                label1.Text = "Cloud3";
-            }
-            else
-                label1.Text = "None";
+            //Range r1 = new Range(), r2 = new Range(), r3 = new Range();
+            //double mean1 = min2 - (max1 + min2) / 2;
+            //double mean2 = min3 - (max2 + min3) / 2;
+            //r1.newRange(min1 - mean1, max1 + mean1);
+            //r2.newRange(min2 - mean1, max2 + mean2);
+            //r3.newRange(min3 - mean2, max3 + mean2);
 
 
 
+            //double x, y;
+            //x = (double)numericUpDown1.Value;
+            //y = (double)numericUpDown2.Value;
+            //var point = PCA.plotPointPCA(x, y);
 
-            double[,] initialLineData1 = new double[data1.Rows(), 2];
-            for (int i = 0; i < data1.Rows(); i++) {
-                initialLineData1[i, 0] = data1[i, 0];
-                initialLineData1[i, 1] = 1;
-            }
-            double[,] initialLineData2 = new double[data2.Rows(), 2];
-            for (int i = 0; i < data2.Rows(); i++) {
-                initialLineData2[i, 0] = data2[i, 0];
-                initialLineData2[i, 1] = 1;
-            }
-            double[,] initialLineData3 = new double[data3.Rows(), 2];
-            for (int i = 0; i < data3.Rows(); i++) {
-                initialLineData3[i, 0] = data3[i, 0];
-                initialLineData3[i, 1] = 1;
-            }
+            //if (checkPoint(r1, point[0, 0]))
+            //{
+            //    label1.Text = "Cloud1";
+            //}
+            //else if (checkPoint(r2, point[0, 0]))
+            //{
+            //    label1.Text = "Cloud2";
+            //}
+            //else if (checkPoint(r3, point[0, 0]))
+            //{
+            //    label1.Text = "Cloud3";
+            //}
+            //else
+            //    label1.Text = "None";
 
 
-            var initialLine1 = new PointPairList();
-            pointPairListInitialisation(initialLine1, initialLineData1);
-            var initialLine2 = new PointPairList();
-            pointPairListInitialisation(initialLine2, initialLineData2);
-            var initialLine3 = new PointPairList();
-            pointPairListInitialisation(initialLine3, initialLineData3);
 
-            LineItem initialLine1Points = myPaneOriginalLine.AddCurve("Setosa", initialLine1, Color.Red, SymbolType.Circle);
-            initialLine1Points.Line.IsVisible = false;
-            LineItem initialLine2Points = myPaneOriginalLine.AddCurve("Versicolor", initialLine2, Color.Green, SymbolType.Diamond);
-            initialLine2Points.Line.IsVisible = false;
-            LineItem initialLine3Points = myPaneOriginalLine.AddCurve("Virginica", initialLine3, Color.Blue, SymbolType.Star);
-            initialLine3Points.Line.IsVisible = false;
+
+            //double[,] initialLineData1 = new double[data1.Rows(), 2];
+            //for (int i = 0; i < data1.Rows(); i++)
+            //{
+            //    initialLineData1[i, 0] = data1[i, 0];
+            //    initialLineData1[i, 1] = 1;
+            //}
+            //double[,] initialLineData2 = new double[data2.Rows(), 2];
+            //for (int i = 0; i < data2.Rows(); i++)
+            //{
+            //    initialLineData2[i, 0] = data2[i, 0];
+            //    initialLineData2[i, 1] = 1;
+            //}
+            //double[,] initialLineData3 = new double[data3.Rows(), 2];
+            //for (int i = 0; i < data3.Rows(); i++)
+            //{
+            //    initialLineData3[i, 0] = data3[i, 0];
+            //    initialLineData3[i, 1] = 1;
+            //}
+
+
+            //var initialLine1 = new PointPairList();
+            //pointPairListInitialisation(initialLine1, initialLineData1);
+            //var initialLine2 = new PointPairList();
+            //pointPairListInitialisation(initialLine2, initialLineData2);
+            //var initialLine3 = new PointPairList();
+            //pointPairListInitialisation(initialLine3, initialLineData3);
+
+            //LineItem initialLine1Points = myPaneOriginalLine.AddCurve("Setosa", initialLine1, Color.Red, SymbolType.Circle);
+            //initialLine1Points.Line.IsVisible = false;
+            //LineItem initialLine2Points = myPaneOriginalLine.AddCurve("Versicolor", initialLine2, Color.Green, SymbolType.Diamond);
+            //initialLine2Points.Line.IsVisible = false;
+            //LineItem initialLine3Points = myPaneOriginalLine.AddCurve("Virginica", initialLine3, Color.Blue, SymbolType.Star);
+            //initialLine3Points.Line.IsVisible = false;
 
 
             double[,] finalLineData1 = new double[finalData1.Rows(), 2];
-            for (int i = 0; i < finalData1.Rows(); i++) {
+            for (int i = 0; i < finalData1.Rows(); i++)
+            {
                 finalLineData1[i, 0] = finalData1[i, 1];
                 finalLineData1[i, 1] = 1;
             }
             double[,] finalLineData2 = new double[finalData2.Rows(), 2];
-            for (int i = 0; i < finalData2.Rows(); i++) {
+            for (int i = 0; i < finalData2.Rows(); i++)
+            {
                 finalLineData2[i, 0] = finalData2[i, 1];
                 finalLineData2[i, 1] = 1;
             }
             double[,] finalLineData3 = new double[finalData3.Rows(), 2];
-            for (int i = 0; i < finalData3.Rows(); i++) {
+            for (int i = 0; i < finalData3.Rows(); i++)
+            {
                 finalLineData3[i, 0] = finalData3[i, 1];
                 finalLineData3[i, 1] = 1;
             }
@@ -818,21 +867,21 @@ namespace PlotPCA {
             finalLine3Points.Line.IsVisible = false;
 
 
-            var initialCloud1 = new PointPairList();
-            var initialCloud2 = new PointPairList();
-            var initialCloud3 = new PointPairList();
+            //var initialCloud1 = new PointPairList();
+            //var initialCloud2 = new PointPairList();
+            //var initialCloud3 = new PointPairList();
 
 
-            pointPairListInitialisation(initialCloud1, data1);
-            pointPairListInitialisation(initialCloud2, data2);
-            pointPairListInitialisation(initialCloud3, data3);
+            //pointPairListInitialisation(initialCloud1, data1);
+            //pointPairListInitialisation(initialCloud2, data2);
+            //pointPairListInitialisation(initialCloud3, data3);
 
-            LineItem initialCloud1Points = myPaneOriginalData.AddCurve("Setosa", initialCloud1, Color.Red, SymbolType.Circle);
-            initialCloud1Points.Line.IsVisible = false;
-            LineItem initialCloud2Points = myPaneOriginalData.AddCurve("Versicolor", initialCloud2, Color.Blue, SymbolType.Diamond);
-            initialCloud2Points.Line.IsVisible = false;
-            LineItem initialCloud3Points = myPaneOriginalData.AddCurve("Virginica", initialCloud3, Color.Green, SymbolType.Star);
-            initialCloud3Points.Line.IsVisible = false;
+            //LineItem initialCloud1Points = myPaneOriginalData.AddCurve("Setosa", initialCloud1, Color.Red, SymbolType.Circle);
+            //initialCloud1Points.Line.IsVisible = false;
+            //LineItem initialCloud2Points = myPaneOriginalData.AddCurve("Versicolor", initialCloud2, Color.Blue, SymbolType.Diamond);
+            //initialCloud2Points.Line.IsVisible = false;
+            //LineItem initialCloud3Points = myPaneOriginalData.AddCurve("Virginica", initialCloud3, Color.Green, SymbolType.Star);
+            //initialCloud3Points.Line.IsVisible = false;
 
             //LineItem initialPoint = myPaneOriginalData.AddCurve("Point", new double[] { x }, new double[] { y }, Color.Brown, SymbolType.Triangle);
             //initialPoint.Line.IsVisible = false;
@@ -849,27 +898,17 @@ namespace PlotPCA {
 
             //finalCloud1.Add(new PointPair(point[0, 0], point[1, 0]));
 
-            LineItem finalCloud1Points = myPaneFinalData.AddCurve("Setosa", finalCloud1, Color.Red, SymbolType.Circle);
-            finalCloud1Points.Line.IsVisible = false;
-            LineItem finalCloud2Points = myPaneFinalData.AddCurve("Versicolor", finalCloud2, Color.Blue, SymbolType.Diamond);
-            finalCloud2Points.Line.IsVisible = false;
-            LineItem finalCloud3Points = myPaneFinalData.AddCurve("Virginica", finalCloud3, Color.Green, SymbolType.Star);
-            finalCloud3Points.Line.IsVisible = false;
+            FinalCloud1Points = myPaneFinalData.AddCurve("Setosa", finalCloud1, Color.Red, SymbolType.Circle);
+            FinalCloud1Points.Line.IsVisible = false;
+            FinalCloud2Points = myPaneFinalData.AddCurve("Versicolor", finalCloud2, Color.Blue, SymbolType.Diamond);
+            FinalCloud2Points.Line.IsVisible = false;
+            FinalCloud3Points = myPaneFinalData.AddCurve("Virginica", finalCloud3, Color.Green, SymbolType.Star);
+            FinalCloud3Points.Line.IsVisible = false;
 
             //LineItem finalPoint = myPaneFinalData.AddCurve("Point", point.GetRow(0), point.GetRow(1), Color.Brown, SymbolType.Triangle);
             //finalPoint.Line.IsVisible = false;
 
-            myPaneOriginalData.AxisChange();
-            zedGraphControl1.Invalidate();
-
-            myPaneFinalData.AxisChange();
-            zedGraphControl2.Invalidate();
-
-            myPaneOriginalLine.AxisChange();
-            zedGraphControl3.Invalidate();
-
-            myPaneFinalLine.AxisChange();
-            zedGraphControl4.Invalidate();
+            replot();
         }
     }
 }
