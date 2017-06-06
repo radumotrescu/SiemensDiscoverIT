@@ -4,6 +4,7 @@ using Accord.Math.Comparers;
 using Accord.Math.Decompositions;
 using Accord.Statistics;
 using System.Collections.Generic;
+using Accord.MachineLearning;
 
 namespace AccordPCA {
 
@@ -176,6 +177,19 @@ namespace AccordPCA {
 
             return yPrim;
         }
+
+        public double[,] plotPointKernelPCA(double x, double y)
+        {
+            var point = new double[1, 2];
+            point[0, 0] = x;
+            point[0, 1] = y;
+
+            var newCloudAdjusted = point.Subtract(this.mean, 0);
+
+            var yPrim = newCloudAdjusted.Dot(KernelData.GetColumn(0).Transpose()); ;
+
+            return yPrim;
+        }
         public void pointRecognition(double x, double y)
         {
             var yPrim = plotPointPCA(x, y);
@@ -241,6 +255,8 @@ namespace AccordPCA {
 
         public void ComputeKernel()
         {
+
+           
             double[,] distanceMatrix = new double[0, 0];
             for (int i = 0; i < finalData.Rows(); i++)
             {
@@ -255,7 +271,7 @@ namespace AccordPCA {
             {
                 for (int j = 0; j < nr; j++)
                 {
-                    double x = (-Gamma * distanceMatrix[i, j]);
+                    double x = (-Gamma * Math.Pow(distanceMatrix[i, j], 2));
                     k[i, j] = Math.Pow(Math.E, x);
                     ones[i, j] = 1.0 / nr;
                 }
@@ -290,6 +306,19 @@ namespace AccordPCA {
 
 
             //ScatterplotBox.Show("kernelData", kernelData);
+        }
+
+
+        public void kernelAccord()
+        {
+            var method = Accord.Statistics.Analysis.PrincipalComponentMethod.Center;
+            var pca = new Accord.Statistics.Analysis.KernelPrincipalComponentAnalysis(new Accord.Statistics.Kernels.Polynomial((int)Gamma), method);
+            pca.Learn(InitialData);
+
+            pca.NumberOfOutputs = 2;
+            double[,] actual = pca.Transform(InitialData);
+
+            KernelData = actual;
         }
     }
 }
