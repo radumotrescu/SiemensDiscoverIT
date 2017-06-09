@@ -592,28 +592,28 @@ namespace PlotPCA {
             var initialPointCloud2 = new PointCloud(cloud2Points, 4, 6, 1);
 
 
-            var csv = new StreamWriter("cloud.csv");
-            var csvWriter = new CsvHelper.CsvWriter(csv);
-            csvWriter.WriteField("X;Y;cloud index");
-            csvWriter.NextRecord();
+			//var csv = new StreamWriter("cloud.csv");
+			//var csvWriter = new CsvHelper.CsvWriter(csv);
+			//csvWriter.WriteField("X;Y;cloud index");
+			//csvWriter.NextRecord();
 
-            var data1 = WriteDataToFile(initialPointCloud1, "cloud1.txt", csvWriter, 1, "moon", false);
-            var data2 = WriteDataToFile(initialPointCloud2, "cloud2.txt", csvWriter, 2, "moon", true);
+			//var data1 = WriteDataToFile(initialPointCloud1, "cloud1.txt", csvWriter, 1, "moon", false);
+			//var data2 = WriteDataToFile(initialPointCloud2, "cloud2.txt", csvWriter, 2, "moon", true);
 
-            csv.Flush();
-            csv.Close();
-
-
-
-            //double[,] data1;
-            //double[,] data2;
+			//csv.Flush();
+			//csv.Close();
 
 
-            //ReadDataFromFile(out data1, "cloud1.txt");
-            //ReadDataFromFile(out data2, "cloud2.txt");
+
+			double[,] data1;
+			double[,] data2;
 
 
-            var list = new List<double[,]>();
+			ReadDataFromFile(out data1, "cloud1.txt");
+			ReadDataFromFile(out data2, "cloud2.txt");
+
+
+			var list = new List<double[,]>();
             list.Add(data1);
             list.Add(data2);
             var allData = combineData(list, cloud1Points + cloud2Points);
@@ -664,94 +664,94 @@ namespace PlotPCA {
             Range cloud1Range;
             Range cloud2Range;
 
-            PCA = new ObjectPCA(allData);
-            PCA.Compute();
-            while (gamma <= 40)
-            {
-                PCA.Gamma = gamma;
-                PCA.ComputeKernel();
-                //PCA.kernelAccord();
-                cloud1Range = new Range { x = 0, y = cloud1Points };
-                cloud2Range = new Range { x = cloud1Points, y = cloud1Points + cloud2Points };
+			PCA = new ObjectPCA(bigAllData);
+			PCA.Compute();
+			while (gamma <= 40)
+			{
+				PCA.Gamma = gamma;
+				PCA.ComputeKernel();
+				//PCA.kernelAccord();
+				cloud1Range = new Range { x = 0, y = cloud1Points };
+				cloud2Range = new Range { x = cloud1Points, y = cloud1Points + cloud2Points };
 
-                finalData1 = PCA.KernelData.Get((int)cloud1Range.x, (int)cloud1Range.y, 0, 2);
-                finalData2 = PCA.KernelData.Get((int)cloud2Range.x, (int)cloud2Range.y, 0, 2);
+				finalData1 = PCA.KernelData.Get((int)cloud1Range.x, (int)cloud1Range.y, 0, 2);
+				finalData2 = PCA.KernelData.Get((int)cloud2Range.x, (int)cloud2Range.y, 0, 2);
 
-                double min1, max1, min2, max2;
+				double min1, max1, min2, max2;
 
-                getMinMax(finalData1.GetColumn(0), out min1, out max1);
-                getMinMax(finalData2.GetColumn(0), out min2, out max2);
+				getMinMax(finalData1.GetColumn(0), out min1, out max1);
+				getMinMax(finalData2.GetColumn(0), out min2, out max2);
 
-                Range r1 = new Range(), r2 = new Range(), r3 = new Range();
-                double mean1 = min2 - (max1 + min2) / 2;
-                r1.newRange(min1 - mean1, max1 + mean1);
-                r2.newRange(min2 - mean1, max2 + mean1);
+				Range r1 = new Range(), r2 = new Range(), r3 = new Range();
+				double mean1 = min2 - (max1 + min2) / 2;
+				r1.newRange(min1 - mean1, max1 + mean1);
+				r2.newRange(min2 - mean1, max2 + mean1);
 
-                //Console.WriteLine(r1.x + " " + r1.y + " " + r2.x + " " + r2.y + " " + r3.x + " " + r3.y + " ");
+				//Console.WriteLine(r1.x + " " + r1.y + " " + r2.x + " " + r2.y + " " + r3.x + " " + r3.y + " ");
 
-                //double x, y;
-                //x = (double)numericUpDown1.Value;
-                //y = (double)numericUpDown2.Value;
-                //var p = PCA.plotPointPCA(x, y);
+				//double x, y;
+				//x = (double)numericUpDown1.Value;
+				//y = (double)numericUpDown2.Value;
+				//var p = PCA.plotPointPCA(x, y);
 
-                double[,] plottedPoints = new double[0, 2];
-                for (int i = 0; i < excludedPointsNumber; i++)
-                {
-                    plottedPoints = plottedPoints.InsertRow(PCA.plotPointKernelPCA(bigAllData.GetRow(indexes[i])[0], bigAllData.GetRow(indexes[i])[1]).GetRow(0));
-                }
+				double[,] plottedPoints = new double[0, 2];
+				for (int i = 0; i < excludedPointsNumber; i++)
+				{
+					plottedPoints = plottedPoints.InsertRow(PCA.plotPointKernelPCA(bigAllData.GetRow(indexes[i])[0], bigAllData.GetRow(indexes[i])[1]).GetRow(0));
+				}
 
-                int[] indexesFinal = new int[excludedPointsNumber];
-                for (int i = 0; i < excludedPointsNumber; i++)
-                {
-                    if (checkPoint(r1, plottedPoints[i, 0]))
-                    {
-                        indexesFinal[i] = 1;
-                    }
-                    else if (checkPoint(r2, plottedPoints[i, 0]))
-                    {
-                        indexesFinal[i] = 2;
-                    }
-                }
-                //Console.WriteLine();
-                //Console.WriteLine(plottedPoints.ToString("+0.0;-0.0"));
-                //Console.WriteLine(indexesFinal.ToString("+0.0;-0.0"));
+				int[] indexesFinal = new int[excludedPointsNumber];
+				for (int i = 0; i < excludedPointsNumber; i++)
+				{
+					if (checkPoint(r1, plottedPoints[i, 0]))
+					{
+						indexesFinal[i] = 1;
+					}
+					else if (checkPoint(r2, plottedPoints[i, 0]))
+					{
+						indexesFinal[i] = 2;
+					}
+				}
+				//Console.WriteLine();
+				//Console.WriteLine(plottedPoints.ToString("+0.0;-0.0"));
+				//Console.WriteLine(indexesFinal.ToString("+0.0;-0.0"));
 
 
-                int differentPoints = 0;
-                for (int i = 0; i < excludedPointsNumber; i++)
-                {
-                    if (indexesInitial[i] != indexesFinal[i])
-                        differentPoints++;
-                }
-                //Console.WriteLine();
-                //Console.WriteLine(differentPoints);
+				int differentPoints = 0;
+				for (int i = 0; i < excludedPointsNumber; i++)
+				{
+					if (indexesInitial[i] != indexesFinal[i])
+						differentPoints++;
+				}
+				//Console.WriteLine();
+				//Console.WriteLine(differentPoints);
 
-                if (differentPoints < minPoints)
-                {
-                    minPoints = differentPoints;
-                    goodGamma = gamma;
-                }
+				if (differentPoints < minPoints)
+				{
+					minPoints = differentPoints;
+					goodGamma = gamma;
+				}
 
-                //var finalCloud1 = new PointPairList();
-                //var finalCloud2 = new PointPairList();
+				//var finalCloud1 = new PointPairList();
+				//var finalCloud2 = new PointPairList();
 
-                //pointPairListInitialisation(finalCloud1, finalData1);
-                //pointPairListInitialisation(finalCloud2, finalData2);
+				//pointPairListInitialisation(finalCloud1, finalData1);
+				//pointPairListInitialisation(finalCloud2, finalData2);
 
-                //FinalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
-                //FinalCloud1Points.Line.IsVisible = false;
-                //FinalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
-                //FinalCloud2Points.Line.IsVisible = false;
+				//FinalCloud1Points = myPaneFinalData.AddCurve("Cloud1", finalCloud1, Color.Red, SymbolType.Circle);
+				//FinalCloud1Points.Line.IsVisible = false;
+				//FinalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
+				//FinalCloud2Points.Line.IsVisible = false;
 
-                //replot();
-                gamma += 0.1;
-            }
+				//replot();
+				gamma += 0.1;
+			}
 
-            Console.WriteLine("Final gamma: " + goodGamma);
-            Console.WriteLine("Minimum points: " + minPoints);
+			Console.WriteLine("Final gamma: " + goodGamma);
+			Console.WriteLine("Minimum points: " + minPoints);
 
-            //goodGamma = 12;
-            PCA = new ObjectPCA(allData);
+			goodGamma = 15;
+            PCA = new ObjectPCA(bigAllData);
             PCA.Gamma = goodGamma;
             PCA.Compute();
             PCA.ComputeKernel();
@@ -761,6 +761,8 @@ namespace PlotPCA {
 
             finalData1 = PCA.KernelData.Get((int)cloud1Range.x, (int)cloud1Range.y, 0, 2);
             finalData2 = PCA.KernelData.Get((int)cloud2Range.x, (int)cloud2Range.y, 0, 2);
+
+			Console.WriteLine(PCA.KernelData.ToString("+0.000;-0.000"));
 
 
             var initialCloud1 = new PointPairList();

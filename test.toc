@@ -1,0 +1,9 @@
+\contentsline {section}{\numberline {1}Libraria Accord.NET}{3}
+\contentsline {section}{\numberline {2}Ce este PCA?}{4}
+\contentsline {paragraph}{\numberline {2.0.0.1}Un scurt exemplu: }{4}
+\contentsline {paragraph}{\numberline {2.0.0.2}Variatia}{5}
+\contentsline {paragraph}{\numberline {2.0.0.3}Covariatia}{5}
+\contentsline {paragraph}{\numberline {2.0.0.4}Matricea de covariatie}{5}
+\contentsline {paragraph}{\numberline {2.0.0.5}Valorile si vectorii proprii}{6}
+\contentsline {paragraph}{\numberline {2.0.0.6}Pasul final PCA}{6}
+\contentsline {section}{\numberline {3}Jurnalul dezvoltarii aplicatiei}{7}
