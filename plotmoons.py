@@ -33,38 +33,65 @@ def stepwise_kpca(X, gamma, n_components):
 
 
 
-from sklearn.datasets import make_moons
-X,y=make_moons(n_samples=100,random_state=123)
+#from sklearn.datasets import make_moons
+#X,y=make_moons(n_samples=90,random_state=123)
+
+#print(len(y))
+
+cloud1=np.loadtxt('cloud1initial.txt')
+cloud2=np.loadtxt('cloud2initial.txt')
+
+zeroes=np.zeros(cloud1.shape[0])
+print (len(zeroes))
+
+ones=np.ones(cloud2.shape[0])
+print (len(ones))
+
+y=np.concatenate((zeroes,ones))
+
+print(len(y))
+
+print(cloud1)
+print('\n')
+print(cloud2)
 
 plt.figure(figsize=(8,6))
 
-pointsA=(X[y==0,0],X[y==0,1])
-pointsB=(X[y==1,0],X[y==1,1])
+totalpoints=np.vstack((cloud1,cloud2))
+print('totalpoints')
+print(totalpoints)
 
-matrixA=np.column_stack((pointsA[0], pointsA[1]))
-matrixB=np.column_stack((pointsB[0], pointsB[1]))
+#pointsA=(X[y==0,0],X[y==0,1])
+#pointsB=(X[y==1,0],X[y==1,1])
+
+#matrixA=np.column_stack((pointsA[0], pointsA[1]))
+#matrixB=np.column_stack((pointsB[0], pointsB[1]))
 
 
-print('\n')
-print(pointsA)
-print('\n')
-print(pointsB)
-print('\n')
+#print('\n')
+#print(pointsA)
+#print('\n')
+#print(pointsB)
+#print('\n')
 plt.title('A nonlinear 2Ddataset')
 plt.ylabel('y coordinate')
 plt.xlabel('x coordinate')
-X_pc=stepwise_kpca(X,15,2)
-print(X)
+X_pc=stepwise_kpca(totalpoints,15,2)
+print('xpc')
+print(X_pc)
 
 plt.scatter(X_pc[y==0, 0], X_pc[y==0,1], color='red', alpha=0.5)
 plt.scatter(X_pc[y==1, 0], X_pc[y==1,1], color='blue', alpha=0.5)
 
-np.savetxt('outfile.txt',X_pc, fmt=' %.5f', delimiter='\n')
-np.savetxt('data.txt', X, fmt=' %.5f', delimiter='\n')
-np.savetxt('redpoints.txt', matrixA, fmt=' %.5f', delimiter='\n')
-np.savetxt('bluepoints.txt', matrixB, fmt=' %.5f', delimiter='\n')
-
-
 plt.show
+
+555
+#np.savetxt('outfile.txt',X_pc, fmt=' %.5f', delimiter='\n')
+#np.savetxt('data.txt', X, fmt=' %.5f', delimiter='\n')
+#np.savetxt('redpoints.txt', matrixA, fmt=' %.5f', delimiter='\n')
+#np.savetxt('bluepoints.txt', matrixB, fmt=' %.5f', delimiter='\n')
+
+
+
 
 
