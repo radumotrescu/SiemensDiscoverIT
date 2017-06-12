@@ -73,15 +73,16 @@ namespace AccordPCA {
 			double[,] data;
 			int pointNumber;
 
-			var pointCloud1 = new PointCloud(10, 2, 3, 3);
-			//var pointCloud2 = new PointCloud(25, 4, 10, 10);
-			//var pointCloud3 = new PointCloud(50, 10, 25, 25);
+			var pointCloud1 = new PointCloud(20, 2, 3, 3);
+			var pointCloud2 = new PointCloud(50, 4, 10, 10);
+			var pointCloud3 = new PointCloud(100, 10, 25, 25);
 			var cloudList = new List<PointCloud>();
 			cloudList.Add(pointCloud1);
-			//cloudList.Add(pointCloud2);
-			//cloudList.Add(pointCloud3);
 
-			//WriteDataToFile(cloudList, "data.txt");
+			cloudList.Add(pointCloud2);
+			cloudList.Add(pointCloud3);
+
+			WriteDataToFile(cloudList, "data.txt");
 			ReadDataFromFile(out data, out pointNumber, "data.txt");
 
 			var PCA1 = new ObjectPCA(data);

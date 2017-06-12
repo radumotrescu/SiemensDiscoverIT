@@ -152,4 +152,31 @@ Matricea rezultata \textbf{FinalData} va contine setul de date dupa aplicarea al
 
 \section{Jurnalul dezvoltarii aplicatiei}
 
+\subsection{Aplicatia AccordPCA}
+Primii pasi pe care i-am facut in cadrul acestui proiect a fost implementarea algoritmului PCA. Acest lucru a fost realizat usor, folosind libraria Accord, mai specific, pentru a realiza diferitele operatii cu matrici. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Compute}
+\end{figure}
+
+Pentru a testa acest algoritm, am introdus prima data un set de date deja testat de catre altcineva, unde se poate observa clar rezultatul algoritmului. ( referinta catre http://dai.fmph.uniba.sk/courses/ml/sl/PCA.pdf) 
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Test1}
+\end{figure}
+\newpage
+
+Urmatorul lucru pe care l-am dorit sa il facem a fost sa vedem cum mai multe noruri de puncte, de diferite dimensiuni, se modifica dupa aplicarea algoritmului. Pentru acest lucru, am creat o clasa \textbf{PointCloud} care descrie un nor de puncte. In interiorul clasei am generat norul de puncte in jurul unor coordonate $\left(x,y\right)$, sub forma unui disc, in care punctele au distributie normala. Rezultatele au fost urmatoarele:
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\linewidth]{Test2}
+\end{figure}
+
+La fel ca in primul test, se poate observa aranjarea dupa prima componenta principala a norilor.
+
+\subsection{Aplicatia PlotPCA}
+In acest moment, am decis sa realizam o aplicatie care are un GUI usor de folosit si unde fiecare nor de puncte este reprezentat in alta culoare, pentru a se vedea mai clar ce se intampla, acest lucru fiind mai important pentru seturile de date in care masuratorile pentru fiecare entitate sunt intrepatrunse, spre exemplu, setul IRIS.
+
 \end{document}

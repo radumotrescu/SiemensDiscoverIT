@@ -116,7 +116,6 @@ namespace AccordPCA {
 
             // data2D = finalData.GetColumns(0, 1);
 
-
         }
 
         public void ComputeKernel()
