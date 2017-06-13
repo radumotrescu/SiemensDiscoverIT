@@ -178,18 +178,7 @@ namespace AccordPCA {
             return yPrim;
         }
 
-        public double[,] plotPointKernelPCA(double x, double y)
-        {
-            var point = new double[1, 2];
-            point[0, 0] = x;
-            point[0, 1] = y;
 
-            var newCloudAdjusted = point.Subtract(this.mean, 0);
-
-            var yPrim = newCloudAdjusted.Dot(KernelData.GetColumn(0).Transpose()); ;
-
-            return yPrim;
-        }
         public void pointRecognition(double x, double y)
         {
             var yPrim = plotPointPCA(x, y);
@@ -253,10 +242,40 @@ namespace AccordPCA {
             set;
         }
 
+        public double[] KernelValues
+        {
+            get;
+            set;
+        }
+
+        public double plotPointKernelPCA(double x, double y)
+        {
+            var point = new double[1, 2];
+            point[0, 0] = x;
+            point[0, 1] = y;
+
+            double[] distance = new double[initialData.Rows()];
+            for (int i = 0; i < initialData.Rows(); i++)
+            {
+                distance[i] = (Math.Pow(point.GetRow(0)[0] - (KernelData.GetRow(i)[0]), 2)) + (Math.Pow(point.GetRow(0)[1] - (KernelData.GetRow(i)[1]), 2));
+            }
+            int nr = distance.Length;
+            double[] k = new double[nr];
+            double[] normalize = new double[nr];
+            for (int i = 0; i < nr; i++)
+            {
+                double aux = (-Gamma * Math.Pow(distance[i], 2));
+                k[i] = Math.Pow(Math.E, aux);
+                normalize[i] = KernelData.GetColumn(0)[i] / KernelValues[i];
+            }
+
+            return k.Dot(normalize);
+        }
+
         public void ComputeKernel()
         {
 
-           
+
             double[,] distanceMatrix = new double[0, 0];
             for (int i = 0; i < finalData.Rows(); i++)
             {
@@ -296,6 +315,8 @@ namespace AccordPCA {
 
 
             KernelData = vectors.GetColumns(0, 1);
+
+            KernelValues = values;
 
             //Console.WriteLine(distanceMatrix.ToString("+0.00;-0.00"));
             //Console.WriteLine();
