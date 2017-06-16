@@ -14,46 +14,106 @@ import numpy as np
 
 def stepwise_kpca(X, gamma, n_components):
     sq_dist=pdist(X, 'sqeuclidean')
-    
+    print(X)
     mat_sq_dists=squareform(sq_dist)
-    
+    #print(mat_sq_dists)
     K=exp(-gamma * mat_sq_dists)
     
     N=K.shape[0]
     one_n=np.ones((N,N))/N
     K=K-one_n.dot(K) - K.dot(one_n) + one_n.dot(K).dot(one_n)
-    
+    print('K')
+    print(K)
     eigvals, eigvecs=eigh(K)
     
+    np.savetxt('eigvectorsunsorted.txt',eigvecs,fmt='%.5f')
+    np.savetxt('eigvaluesunsorted.txt',eigvals)
     
+    #print('alphas')
+   
     alphas = np.column_stack((eigvecs[:,-i] for i in range(1,n_components+1)))
     lambdas = [eigvals[-i] for i in range(1,n_components+1)]
-
-    return alphas, lambdas
+    #print(alphas)
+    #print('lambdas')
+    #print(lambdas)
+    return mat_sq_dists,one_n,K,alphas, lambdas
 
 
 from sklearn.datasets import make_moons
-X, y = make_moons(n_samples=100, random_state=123)
-alphas, lambdas = stepwise_kpca(X, gamma=15, n_components=1)
+from sklearn.decomposition import PCA
+
+cloud1=np.loadtxt('cloud1.txt')
+t = np.reshape(cloud1,(-1,2))
+print(t)
+
+cloud2=np.loadtxt('cloud2.txt')
+z=np.reshape(cloud2,(-1,2))
+print(z)
+X1, y = make_moons(n_samples=100, random_state=123)
+X=np.vstack((t,z))
+print(X)
 
 
-x_new = X[25]
-X_proj = alphas[25]
-print(x_new)
+
+mat_sq_dists,one_n,K,alphas, lambdas = stepwise_kpca(X, gamma=15, n_components=100)
+
+np.savetxt('kerneldata.txt',alphas[:,[0,1]], fmt='%.5f')
+
+n=alphas*lambdas
+m=lambdas*alphas
+c=n-m
+
+
+np.savetxt('eigvectorssorted.txt',alphas,fmt='%.5f')
+np.savetxt('eigvaluessorted.txt',lambdas)
+
+x_new = X[0]
+X_proj = alphas[0]
+#print(x_new)
 
 def project_x(x_new, X, gamma, alphas, lambdas):
+    print('alphas')
+    print(alphas)
+    print('lambdas')
+    print(lambdas)
+    
+    print('x_new')
+    print(x_new)
+    print('X')
+    print(X)
+    
     #for row in X:
         #print(((x_new-row)**2))
     pair_dist = np.array([np.sum((x_new-row)**2) for row in X])
+    print('pair-dist')
+    print(pair_dist)
+
     k = np.exp(-gamma * pair_dist)
+    print('k')
     print(k)
-    return k.dot(alphas / lambdas)
+    x=(alphas/lambdas)
+    print('x')
+    print(x)
+    return x,k,k.dot(x)
 
 # projection of the "new" datapoint
 
-x_reproj = project_x(x_new, X, gamma=15, alphas=alphas, lambdas=lambdas)
+x,k,x_reproj = project_x(x_new, X, gamma=15, alphas=alphas, lambdas=lambdas)
+print("xreproj")
+print(x_reproj)
 
+extractedData=alphas[:,[0,1]]
 
+scikit_pca=PCA(n_components=2)
+X_spca=scikit_pca.fit_transform(X)
+a=scikit_pca.components_
+ax=scikit_pca.explained_variance_
+
+testPCA=PCA(n_components=2)
+extractedDataPCA=testPCA.fit_transform(extractedData)
+
+bx=testPCA.explained_variance_
+b=testPCA.components_
 
 plt.figure(figsize=(8,6))
 plt.scatter(alphas[y==0, 0], np.zeros((50)), color='red', alpha=0.5)

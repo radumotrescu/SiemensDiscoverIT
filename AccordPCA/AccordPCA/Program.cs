@@ -82,14 +82,14 @@ namespace AccordPCA {
 			cloudList.Add(pointCloud2);
 			cloudList.Add(pointCloud3);
 
-			WriteDataToFile(cloudList, "data.txt");
-			ReadDataFromFile(out data, out pointNumber, "data.txt");
+			//WriteDataToFile(cloudList, "data.txt");
+			ReadDataFromFile(out data, out pointNumber, "kerneldata.txt");
 
 			var PCA1 = new ObjectPCA(data);
 			PCA1.Compute();
-			PCA1.ShowScatterplots();
+			//PCA1.ShowScatterplots();
 
-            PCA1.ComputeKernel();
+            //PCA1.ComputeKernel();
 
 			//PCA1.pointRecognition(2, 5);
 

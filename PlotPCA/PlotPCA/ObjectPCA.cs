@@ -5,6 +5,7 @@ using Accord.Math.Decompositions;
 using Accord.Statistics;
 using System.Collections.Generic;
 using Accord.MachineLearning;
+using System.IO;
 
 namespace AccordPCA {
 
@@ -118,6 +119,9 @@ namespace AccordPCA {
 
             eigenvectors = Matrix.Sort(eigenvalues, eigenvectors, new GeneralComparer(ComparerDirection.Descending, true));
 
+            Console.WriteLine("eigenvectors pca\n" + eigenvectors.ToString("+0.000;-0.000"));
+            Console.WriteLine("eigenvalues pca\n" + eigenvalues.ToString("+0.00000;-0.000000"));
+
             finalData = dataAdjusted.Dot(eigenvectors);
 
             data2D = finalData.GetColumns(0, 1);
@@ -223,7 +227,7 @@ namespace AccordPCA {
             var final = new double[S.Rows()];
             for (int i = 0; i < final.Rows(); i++)
             {
-                final[i] = Math.Sqrt(Math.Pow(S[i, 0], 2) + Math.Pow(S[i, 1], 2));
+                final[i] =Math.Pow(S[i, 0], 2) + Math.Pow(S[i, 1], 2);
 
             }
 
@@ -242,31 +246,36 @@ namespace AccordPCA {
             set;
         }
 
-        public double[] KernelValues
+        public double KernelValues
         {
             get;
             set;
         }
+
+        public double[] KernelVectors
+        { get; set; }
 
         public double plotPointKernelPCA(double x, double y)
         {
             var point = new double[1, 2];
             point[0, 0] = x;
             point[0, 1] = y;
+            int nr = initialData.Rows();
 
-            double[] distance = new double[initialData.Rows()];
+            double[] distance = new double[nr];
             for (int i = 0; i < initialData.Rows(); i++)
             {
-                distance[i] = (Math.Pow(point.GetRow(0)[0] - (KernelData.GetRow(i)[0]), 2)) + (Math.Pow(point.GetRow(0)[1] - (KernelData.GetRow(i)[1]), 2));
+                distance[i] = (Math.Pow(x - (InitialData.GetRow(i)[0]), 2)) + (Math.Pow(y - (InitialData.GetRow(i)[1]), 2));
             }
-            int nr = distance.Length;
+
             double[] k = new double[nr];
             double[] normalize = new double[nr];
             for (int i = 0; i < nr; i++)
             {
-                double aux = (-Gamma * Math.Pow(distance[i], 2));
+                //double aux = (-Gamma * Math.Pow(distance[i], 2));
+                double aux = (-Gamma * distance[i]);
                 k[i] = Math.Pow(Math.E, aux);
-                normalize[i] = KernelData.GetColumn(0)[i] / KernelValues[i];
+                normalize[i] = KernelVectors[i] / KernelValues;
             }
 
             return k.Dot(normalize);
@@ -277,7 +286,7 @@ namespace AccordPCA {
 
 
             double[,] distanceMatrix = new double[0, 0];
-            for (int i = 0; i < finalData.Rows(); i++)
+            for (int i = 0; i < initialData.Rows(); i++)
             {
                 distanceMatrix = distanceMatrix.InsertRow(getDistances(initialData.GetRow(i)[0], initialData.GetRow(i)[1]));
             }
@@ -290,7 +299,8 @@ namespace AccordPCA {
             {
                 for (int j = 0; j < nr; j++)
                 {
-                    double x = (-Gamma * Math.Pow(distanceMatrix[i, j], 2));
+                    //double x = (-Gamma * Math.Pow(distanceMatrix[i, j], 2));
+                    double x = (-Gamma * distanceMatrix[i, j]);
                     k[i, j] = Math.Pow(Math.E, x);
                     ones[i, j] = 1.0 / nr;
                 }
@@ -299,11 +309,24 @@ namespace AccordPCA {
             var p1 = ones.Dot(k);
             var p2 = k.Dot(ones);
 
-            var final = k.Subtract(p1).Subtract(p2).Add(p1.Dot(ones));
+            //var final = k.Subtract(p1).Subtract(p2).Add(p1.Dot(ones));
+            var final = k.Subtract(ones.Dot(k)).Subtract(k.Dot(ones)).Add(ones.Dot(k).Dot(ones));
+            //final = final.Transpose();
 
             var e = new EigenvalueDecomposition(final);
             var values = e.RealEigenvalues;
             var vectors = e.Eigenvectors;
+
+
+            StreamWriter sw = new StreamWriter("eigenvectorsunsorted.txt");
+            StreamWriter sw1 = new StreamWriter("eigenvaluesunsorted.txt");
+            for (int i = 0; i < vectors.Rows(); i++)
+            {
+                sw.WriteLine(vectors.GetRow(i).ToString("+0.00000;-0.00000"));
+                sw1.WriteLine(values[i]);
+            }
+            sw.Close();
+            sw1.Close();
 
             vectors = Matrix.Sort(values, vectors, new GeneralComparer(ComparerDirection.Descending, true));
 
@@ -314,9 +337,27 @@ namespace AccordPCA {
             //    Console.WriteLine(dataAdjusted[i, 0] + " " + vectors[i, 0] + " " + kernelData[i, 0] + " " + kernelData[i, 1]);
 
 
+
+
             KernelData = vectors.GetColumns(0, 1);
 
-            KernelValues = values;
+
+            allKernelValues = values;
+            allKernelVectors = vectors;
+            allKernelData = vectors;
+
+            KernelValues = values[0];
+            KernelVectors = vectors.GetColumn(0);
+
+            sw = new StreamWriter("kerneldata.txt");
+            sw1 = new StreamWriter("eigenvaluessorted.txt");
+            for (int i = 0; i < vectors.Rows(); i++)
+            {
+                sw.WriteLine(KernelData.GetRow(i).ToString("+0.00000;-0.00000"));
+                sw1.WriteLine(values[i]);
+            }
+            sw.Close();
+            sw1.Close();
 
             //Console.WriteLine(distanceMatrix.ToString("+0.00;-0.00"));
             //Console.WriteLine();
@@ -341,5 +382,11 @@ namespace AccordPCA {
 
             KernelData = actual;
         }
+
+        public double[] allKernelValues { get; set; }
+
+        public double[,] allKernelVectors { get; set; }
+
+        public double[,] allKernelData { get; set; }
     }
 }
