@@ -606,7 +606,34 @@ namespace PlotPCA {
         private int testNumber = 0;
         private double totalNumber = 0;
 
-        private void button2_Click(object sender, EventArgs e)
+
+		static List<int> pick10(List<int> indexes)
+		{
+			List<int> toReturn = new List<int>();
+			Random random = new Random();
+			int nr = 0;
+			while (nr < 10)
+			{
+				int x = random.Next(0, indexes.Count);
+				while (toReturn.IndexOf(indexes[x]) < 0)
+				{
+					toReturn.Add(indexes[x]); nr++;
+				}
+
+			}
+			return toReturn;
+		}
+
+		static List<int> removeIndexesFromList(List<int> indexes, List<int> toRemove)
+		{
+			foreach (int index in toRemove)
+			{
+				indexes.Remove(index);
+			}
+			return indexes;
+		}
+
+		private void button2_Click(object sender, EventArgs e)
         {
             clearPlots();
 
@@ -649,6 +676,8 @@ namespace PlotPCA {
             //PCA.Gamma = (double)numericUpDown5.Value;
             //PCA.Compute();
             //PCA.ComputeKernel();
+
+
 
 
             var bigAllData = new double[allData.Rows(), allData.Columns()];
