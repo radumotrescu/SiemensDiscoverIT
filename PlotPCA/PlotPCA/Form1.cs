@@ -438,7 +438,7 @@ namespace PlotPCA {
             double[,] plottedPoints = new double[0, 2];
             for (int i = 0; i < excludedPointsNumber; i++)
             {
-                plottedPoints = plottedPoints.InsertRow(PCA.plotPointPCA(bigAllData.GetRow(indexes[i])[0], bigAllData.GetRow(indexes[i])[1]).GetRow(0));
+                plottedPoints = plottedPoints.InsertRow(PCA.plotPointPCA(bigAllData.GetRow(indexes[i])[0], bigAllData.GetRow(indexes[i])[1]));
             }
             int[] indexesFinal = new int[excludedPointsNumber];
             for (int i = 0; i < excludedPointsNumber; i++)
@@ -803,7 +803,7 @@ namespace PlotPCA {
                     for (int i = 0; i < excludedPointsNumber; i++)
                     {
                         initialExcludedPoints = initialExcludedPoints.InsertRow(bigAllData.GetRow(indexes[i]));
-                        plottedPoints = plottedPoints.InsertRow(new double[] { PCA.plotPointKernelPCA(bigAllData.GetRow(indexes[i])[0], bigAllData.GetRow(indexes[i])[1]), 0 });
+                        plottedPoints = plottedPoints.InsertRow(new double[] { PCA.plotPointKernelPCA(bigAllData.GetRow(indexes[i])), 0 });
                         if (indexes[i] < 50)
                         {
                             cloud1PlottedPoints = cloud1PlottedPoints.InsertRow(new double[] { plottedPoints[i, 0], plottedPoints[i, 1] });
