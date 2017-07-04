@@ -336,8 +336,8 @@ namespace PlotPCA {
             clearPlots();
 
             var initialPointCloud1 = new PointCloud(cloud1Points, 5, 2, 2);
-            var initialPointCloud2 = new PointCloud(cloud2Points, 10, 15, 15);
-            var initialPointCloud3 = new PointCloud(cloud3Points, 10, 30, 30);
+            var initialPointCloud2 = new PointCloud(cloud2Points, 5, 15, 15);
+            var initialPointCloud3 = new PointCloud(cloud3Points, 10, 40, 40);
 
             var csv = new StreamWriter("cloud.csv");
             var csvWriter = new CsvHelper.CsvWriter(csv);
@@ -433,12 +433,12 @@ namespace PlotPCA {
             double x, y;
             x = (double)numericUpDown1.Value;
             y = (double)numericUpDown2.Value;
-            var p = PCA.plotPointPCA(x, y);
+            var p = PCA.plotPointPCA(new double[] { x,y});
 
             double[,] plottedPoints = new double[0, 2];
             for (int i = 0; i < excludedPointsNumber; i++)
             {
-                plottedPoints = plottedPoints.InsertRow(PCA.plotPointPCA(bigAllData.GetRow(indexes[i])[0], bigAllData.GetRow(indexes[i])[1]));
+                plottedPoints = plottedPoints.InsertRow(PCA.plotPointPCA(bigAllData.GetRow(indexes[i])));
             }
             int[] indexesFinal = new int[excludedPointsNumber];
             for (int i = 0; i < excludedPointsNumber; i++)

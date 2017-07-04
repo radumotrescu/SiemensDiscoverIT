@@ -109,6 +109,7 @@ namespace AccordPCA
 		/// </summary>
 		public void Compute()
 		{
+            
 			mean = initialData.Mean(0);
 
 			dataAdjusted = initialData.Subtract(mean, 0);
@@ -160,23 +161,17 @@ namespace AccordPCA
 		//}
 
 
-		public double[] plotPointPCA(double x, double y)
+		public double[] plotPointPCA(double[] row)
 		{
-			var point = new double[2];
-			point[0] = x;
-			point[1] = y;
-
-
-
 
 			//Console.WriteLine(Eigenvectors.ToString("+0.00;-0.00"));
 
-			var newCloudAdjusted = point.Subtract(this.mean);
+			var newCloudAdjusted = row.Subtract(this.mean);
 
 			//Console.WriteLine("Mean: " + mean.ToString("+0.0;-0.0"));
 			//Console.WriteLine("Cloud adjusted :" + newCloudAdjusted.ToString("+0.0;-0.0"));
 
-			var yPrim = newCloudAdjusted.Dot(Eigenvectors.Transpose()); ;
+			var yPrim = newCloudAdjusted.Dot(Eigenvectors.Transpose()); 
 
 			//yPrim = Matrix.Sort(eigenvalues, yPrim, new GeneralComparer(ComparerDirection.Ascending, true));
 
@@ -188,38 +183,38 @@ namespace AccordPCA
 		}
 
 		 
-		public void pointRecognition(double x, double y)
-		{
-			var yPrim = plotPointPCA(x, y);
+        //public void pointRecognition(double x, double y)
+        //{
+        //    var yPrim = plotPointPCA(x, y);
 
-			Console.WriteLine();
-			Console.WriteLine(yPrim.ToString("+0.00;-0.00"));
+        //    Console.WriteLine();
+        //    Console.WriteLine(yPrim.ToString("+0.00;-0.00"));
 
-			var S = finalData.Subtract(yPrim.Transpose().GetRow(0), 0);
+        //    var S = finalData.Subtract(yPrim.Transpose().GetRow(0), 0);
 
-			Console.WriteLine();
-			//Console.WriteLine(S.ToString("+0.00;-0.00"));
+        //    Console.WriteLine();
+        //    //Console.WriteLine(S.ToString("+0.00;-0.00"));
 
-			var final = new double[S.Rows()];
-			var min = Double.MaxValue;
-			var minIndex = 0;
-			for (int i = 0; i < final.Rows(); i++)
-			{
-				final[i] = Math.Sqrt(Math.Pow(S[i, 0], 2) + Math.Pow(S[i, 1], 2));
-				if (final[i] < min)
-				{
-					min = final[i];
-					minIndex = i;
-				}
-			}
+        //    var final = new double[S.Rows()];
+        //    var min = Double.MaxValue;
+        //    var minIndex = 0;
+        //    for (int i = 0; i < final.Rows(); i++)
+        //    {
+        //        final[i] = Math.Sqrt(Math.Pow(S[i, 0], 2) + Math.Pow(S[i, 1], 2));
+        //        if (final[i] < min)
+        //        {
+        //            min = final[i];
+        //            minIndex = i;
+        //        }
+        //    }
 
-			Console.WriteLine(min);
-			Console.WriteLine(finalData[minIndex, 0] + " " + finalData[minIndex, 1]);
-			Console.WriteLine(initialData[minIndex, 0] + " " + initialData[minIndex, 1]);
+        //    Console.WriteLine(min);
+        //    Console.WriteLine(finalData[minIndex, 0] + " " + finalData[minIndex, 1]);
+        //    Console.WriteLine(initialData[minIndex, 0] + " " + initialData[minIndex, 1]);
 
 
 
-		}
+        //}
 
 		public double[] getDistances(double x, double y)
 		{

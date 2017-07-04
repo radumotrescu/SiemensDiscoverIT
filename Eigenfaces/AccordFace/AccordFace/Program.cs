@@ -18,8 +18,8 @@ namespace AccordFace {
             List<Bitmap> testingFaces = new List<Bitmap>();
             int imageWidth = 192;
             int imageHeight = 168;
-            int trainingImageNumber = 41;
-            int testingImageNumber = 15;
+            int trainingImageNumber = 10;
+            int testingImageNumber = 14;
 
             for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
             {
@@ -33,6 +33,19 @@ namespace AccordFace {
                     testingFaces.Add(newBitmap);
 
             }
+
+            //for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
+            //{
+
+            //    string path = string.Format(@"yaleB03\subject3 ({0}).bmp", i);
+
+            //    Bitmap newBitmap = new Bitmap(path);
+            //    if (i <= trainingImageNumber)
+            //        trainingFaces.Add(newBitmap);
+            //    else
+            //        testingFaces.Add(newBitmap);
+
+            //}
 
 
             //string path1 = string.Format(@"yaleB01\tree.bmp");
@@ -73,20 +86,25 @@ namespace AccordFace {
 
 
             int size = imageHeight * imageWidth;
-            double[,] data = new double[size, trainingImageNumber];
+            double[,] data = new double[trainingFaces.Count, size];
 
 
             for (int i = 0; i < trainingOutputList.Count; i++)
             {
-                data.SetColumn(i, trainingOutputList[i]);
+                data.SetRow(i, trainingOutputList[i]);
             }
 
 
             ObjectPCA obj = new ObjectPCA(data);
-            //obj.Gamma = 22546;
-            // obj.ComputeKernel();
-            obj.Compute();
+            obj.Gamma = 15;
+            obj.ComputeKernel();
+            //obj.Compute();
             //double[,] finalData = obj.KernelData;
+
+
+            //var image = testingOutputList[14].Transpose().Dot(finalData.Transpose());
+
+            // var image1 = data.Transpose().Dot(finalData.GetColumn(0));
             //double[,] finalData = obj.FinalData;
 
 
@@ -94,37 +112,51 @@ namespace AccordFace {
             //foreach (var face in trainingOutputList)
             //    obj.faceRecognition(face);
 
-            double[,] finalData = obj.plotPointPCA(testingOutputList[12]);
+            double finalData = obj.plotPointKernelPCA(testingOutputList[13]);
 
 
-            int minimi = 0;
-            foreach (var training in testingOutputList)
-            {
+            //int minimi = 0;
+            //foreach (var training in testingOutputList)
+            //{
 
-                if (obj.faceRecognition(training) < 105)
-                    minimi++;
-            }
-
-
-
-            ArrayToImage ati = new ArrayToImage(imageHeight, imageWidth);
-            ati.Min = finalData.Min();
-            ati.Max = finalData.Max();
-            Bitmap eigenface = new Bitmap(imageHeight, imageWidth);
-
-            for (int i = 0; i < finalData.Columns(); i++)
-            {
-                string path = string.Format(@"D:\eigenfaces result\image{0}.bmp", i);
-                ati.Convert(finalData.GetColumn(i), out eigenface);
-                eigenface.Save(path);
-            }
+            //    if (obj.faceRecognition(training) < 105)
+            //        minimi++;
+            //}
+            //System.Console.WriteLine(minimi);
 
 
+            //ArrayToImage ati = new ArrayToImage(imageHeight, imageWidth);
+            //ati.Min = finalData.Min();
+            //ati.Max = finalData.Max();
+            //Bitmap eigenface = new Bitmap(imageHeight, imageWidth);
 
-            System.Console.WriteLine(minimi);
+            //for (int i = 0; i < finalData.Columns(); i++)
+            //{
+            //    string path = string.Format(@"D:\eigenfaces result\image{0}.bmp", i);
+            //    ati.Convert(finalData.GetColumn(i), out eigenface);
+            //    eigenface.Save(path);
+            //}
 
 
-            eigenface.Dispose();
+            //finalData = image;
+            //for (int i = 0; i < finalData.Columns(); i++)
+            //{
+            //    string path = string.Format(@"D:\eigenfaces result\image{0}.bmp", i);
+            //    ati.Convert(finalData.GetColumn(i), out eigenface);
+            //    eigenface.Save(path);
+            //}
+
+
+            //string path2 = string.Format(@"D:\eigenfaces result\image{0}.bmp", "asd");
+            //ati.Convert(image1, out eigenface);
+            //eigenface.Save(path2);
+            //eigenface.Dispose();
+
+
+
+
+
+
             foreach (Bitmap bitmap in trainingFaces)
                 bitmap.Dispose();
             //Console.WriteLine(output.ToString("+0.00;-0.00"));

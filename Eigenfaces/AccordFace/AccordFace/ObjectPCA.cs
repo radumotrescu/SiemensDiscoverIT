@@ -107,6 +107,8 @@ namespace AccordPCA {
         /// </summary>
         public void Compute()
         {
+            initialData = initialData.Transpose();
+
             mean = initialData.Mean();
 
             dataAdjusted = initialData.Subtract(mean);
@@ -158,29 +160,19 @@ namespace AccordPCA {
         //}
 
 
-        public double[,] plotPointPCA(double[] row)
+        public double[] plotPointPCA(double[] row)
         {
-
 
 
 
             //Console.WriteLine(Eigenvectors.ToString("+0.00;-0.00"));
 
-            var newCloudAdjusted = row.Subtract(mean);
+            var newCloudAdjusted = row.Subtract(this.mean);
 
             //Console.WriteLine("Mean: " + mean.ToString("+0.0;-0.0"));
             //Console.WriteLine("Cloud adjusted :" + newCloudAdjusted.ToString("+0.0;-0.0"));
 
-            //var yPrim = eigenvectors.Transpose().Dot(newCloudAdjusted);
-
-            //var yPrim = new double[eigenvectors.Columns()];
-            //for (int i = 0; i < eigenvectors.Columns(); i++)
-            //{
-            //    yPrim[i] = (eigenvectors.GetColumn(i).Dot(newCloudAdjusted));
-            //}
-
-            var yprim1 = newCloudAdjusted.Transpose().Dot(eigenvectors.GetColumns(0, 1, 2));
-
+            var yPrim = newCloudAdjusted.Dot(Eigenvectors.Transpose());
 
             //yPrim = Matrix.Sort(eigenvalues, yPrim, new GeneralComparer(ComparerDirection.Ascending, true));
 
@@ -188,35 +180,34 @@ namespace AccordPCA {
             //Console.WriteLine("yprim :" + yPrim.ToString("+0.0;-0.0"));
 
 
-            //return new double[0,0].InsertRow( yprim1);
-            return yprim1;
+            return yPrim;
         }
 
-        public double faceRecognition(double[] row)
-        {
-            var yPrim = plotPointPCA(row);
+        //public double faceRecognition(double[] row)
+        //{
+        //    var yPrim = plotPointPCA(row);
 
-            var min = Double.MaxValue;
-            var minIndex = 0;
-            for (int i = 0; i < yPrim.Columns(); i++)
-            {
-                var x=finalData.GetColumn(0).Subtract(yPrim.GetColumn(i));
-                double aux = 0;
-                for (int j = 0; j < x.Length;j++ )
-                    aux += Math.Pow(x[j], 2);
-                if (Math.Sqrt(aux) < min)
-                {
-                    min = Math.Sqrt(aux);
-                    minIndex = i;
-                }
-            }
+        //    var min = Double.MaxValue;
+        //    var minIndex = 0;
+        //    for (int i = 0; i < yPrim.Length; i++)
+        //    {
+        //        var x = eigenvectors.GetColumn(0).Subtract(yPrim);
+        //        double aux = 0;
+        //        for (int j = 0; j < x.Length; j++)
+        //            aux += Math.Pow(x[j], 2);
+        //        if (Math.Sqrt(aux) < min)
+        //        {
+        //            min = Math.Sqrt(aux);
+        //            minIndex = i;
+        //        }
+        //    }
 
-            Console.WriteLine(min + "  " +minIndex);
-           // Console.WriteLine(finalData[minIndex, 0] + " " + finalData[minIndex, 1]);
-           // Console.WriteLine(initialData[minIndex, 0] + " " + initialData[minIndex, 1]);
-            Console.WriteLine();
-            return min;
-        }
+        //    Console.WriteLine(min + "  " + minIndex);
+        //    // Console.WriteLine(finalData[minIndex, 0] + " " + finalData[minIndex, 1]);
+        //    // Console.WriteLine(initialData[minIndex, 0] + " " + initialData[minIndex, 1]);
+        //    Console.WriteLine();
+        //    return min;
+        //}
 
 
         public void pointRecognition(double[] row)
@@ -275,42 +266,42 @@ namespace AccordPCA {
         public double[] KernelVectors
         { get; set; }
 
-        public double plotPointKernelPCA2(double x, double y)
-        {
-            var point = new double[1, 2];
-            point[0, 0] = x;
-            point[0, 1] = y;
-            int nr = initialData.Rows();
+        //public double plotPointKernelPCA2(double x, double y)
+        //{
+        //    var point = new double[1, 2];
+        //    point[0, 0] = x;
+        //    point[0, 1] = y;
+        //    int nr = initialData.Rows();
 
-            double[] distance = new double[nr];
-            for (int i = 0; i < initialData.Rows(); i++)
-            {
-                distance[i] = (Math.Pow(x - (InitialData.GetRow(i)[0]), 2)) + (Math.Pow(y - (InitialData.GetRow(i)[1]), 2));
-            }
+        //    double[] distance = new double[nr];
+        //    for (int i = 0; i < initialData.Rows(); i++)
+        //    {
+        //        distance[i] = (Math.Pow(x - (InitialData.GetRow(i)[0]), 2)) + (Math.Pow(y - (InitialData.GetRow(i)[1]), 2));
+        //    }
 
-            double[] k = new double[nr];
-            double[] normalize = new double[nr];
-            for (int i = 0; i < nr; i++)
-            {
-                //double aux = (-Gamma * Math.Pow(distance[i], 2));
-                double aux = (-Gamma * distance[i]);
-                k[i] = Math.Pow(Math.E, aux);
-                normalize[i] = KernelVectors[i] / KernelValues;
-            }
+        //    double[] k = new double[nr];
+        //    double[] normalize = new double[nr];
+        //    for (int i = 0; i < nr; i++)
+        //    {
+        //        //double aux = (-Gamma * Math.Pow(distance[i], 2));
+        //        double aux = (-Gamma * distance[i]);
+        //        k[i] = Math.Pow(Math.E, aux);
+        //        normalize[i] = KernelVectors[i] / KernelValues;
+        //    }
 
-            var toReturn = k.Dot(normalize);
-            return toReturn;
-        }
+        //    var toReturn = k.Dot(normalize);
+        //    return toReturn;
+        //}
 
         public double plotPointKernelPCA(double[] row)
         {
-
             int nr = initialData.Rows();
 
             double[] distance = new double[nr];
             for (int i = 0; i < initialData.Rows(); i++)
             {
                 double aux = 0;
+                Console.WriteLine("i" + i);
                 for (int j = 0; j < row.Rows(); j++)
                 {
                     aux += (Math.Pow(row[j] - (InitialData.GetRow(i)[j]), 2));
@@ -355,15 +346,12 @@ namespace AccordPCA {
         {
 
 
+
             double[,] distanceMatrix = new double[0, 0];
-            for (int i = 600; i < initialData.Rows(); i++)
+            for (int i = 0; i < initialData.Rows(); i++)
             {
-                Console.WriteLine(i);
+                //Console.WriteLine(i);
                 distanceMatrix = distanceMatrix.InsertRow(getDistances(initialData.GetRow(i)));
-                if(i==200)
-                {
-                    Console.WriteLine();
-                }
             }
             int nr = distanceMatrix.Rows();
 
@@ -412,10 +400,10 @@ namespace AccordPCA {
             //    Console.WriteLine(dataAdjusted[i, 0] + " " + vectors[i, 0] + " " + kernelData[i, 0] + " " + kernelData[i, 1]);
 
 
-
-            for (int i = 0; i < initialData.Columns(); i++)
-                KernelData.InsertColumn(vectors.GetColumn(i));
-
+            //KernelData = new double[vectors.Rows(), vectors.Rows()];
+            //for (int i = 0; i < vectors.Columns(); i++)
+            //    KernelData.InsertColumn(vectors.GetColumn(i));
+            KernelData = vectors;
 
             allKernelValues = values;
             allKernelVectors = vectors;
@@ -446,16 +434,17 @@ namespace AccordPCA {
         }
 
 
-        public void kernelAccord()
+        public double[,] kernelAccord()
         {
+
             var method = Accord.Statistics.Analysis.PrincipalComponentMethod.Center;
-            var pca = new Accord.Statistics.Analysis.KernelPrincipalComponentAnalysis(new Accord.Statistics.Kernels.Polynomial((int)Gamma), method);
+            var pca = new Accord.Statistics.Analysis.KernelPrincipalComponentAnalysis(new Accord.Statistics.Kernels.Gaussian(Gamma), method);
             pca.Learn(InitialData);
 
-            pca.NumberOfOutputs = 2;
+            pca.NumberOfOutputs = 50;
             double[,] actual = pca.Transform(InitialData);
 
-            KernelData = actual;
+            return actual;
         }
 
         public double[] allKernelValues { get; set; }
