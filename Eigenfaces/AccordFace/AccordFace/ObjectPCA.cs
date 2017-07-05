@@ -308,7 +308,7 @@ namespace AccordPCA
 				{
 					aux += (Math.Pow(row[j] - (InitialData.GetRow(i)[j]), 2));
 				}
-				distance[i] = aux / Math.Pow(10, 5);
+				distance[i] = aux;
 			}
 			//Console.WriteLine("done");
 			double[] k = new double[nr];
@@ -338,7 +338,7 @@ namespace AccordPCA
 				for (int j = 0; j < initialData.Columns(); j++)
 					final[i] += Math.Pow(S[i, j], 2);
 				//Console.WriteLine(final[i] + " " + i);
-
+                //final[i] = final[i] / Math.Pow(10, 5);
 			}
 
 			return final;
@@ -454,5 +454,21 @@ namespace AccordPCA
 		public double[,] allKernelVectors { get; set; }
 
 		public double[,] allKernelData { get; set; }
+
+
+        public void take2()
+        {
+            var means = initialData.Mean(0);
+            var matrix = initialData.Subtract(means,0);
+            var c = matrix.Transpose().Dot(matrix);
+            c = c.Divide(initialData.Rows());
+
+            var evd =new EigenvalueDecomposition(c);
+
+            eigenvalues = evd.RealEigenvalues;
+            eigenvectors = evd.Eigenvectors;
+
+            eigenvectors = Matrix.Sort(eigenvalues, eigenvectors, new GeneralComparer(ComparerDirection.Descending, true));
+        }
 	}
 }

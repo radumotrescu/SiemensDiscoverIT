@@ -4,6 +4,7 @@ using System.Linq;
 using Accord.Imaging.Converters;
 using Accord.Math;
 using AccordPCA;
+using System;
 
 namespace AccordFace {
     class Program {
@@ -19,7 +20,7 @@ namespace AccordFace {
             int imageWidth = 192;
             int imageHeight = 168;
             int trainingImageNumber = 10;
-            int testingImageNumber = 3;
+            int testingImageNumber = 5;
 
             for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
             {
@@ -34,30 +35,30 @@ namespace AccordFace {
 
             }
 
-			for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
-			{
+            for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
+            {
 
-				string path = string.Format(@"yaleB03\subject3 ({0}).bmp", i);
+                string path = string.Format(@"yaleB03\subject3 ({0}).bmp", i);
 
-				Bitmap newBitmap = new Bitmap(path);
-				if (i <= trainingImageNumber)
-					trainingFaces.Add(newBitmap);
-				else
-					testingFaces.Add(newBitmap);
+                Bitmap newBitmap = new Bitmap(path);
+                if (i <= trainingImageNumber)
+                    trainingFaces.Add(newBitmap);
+                else
+                    testingFaces.Add(newBitmap);
 
-			}
-
-
-			//string path1 = string.Format(@"yaleB01\tree.bmp");
-			//Bitmap newBitmap1 = new Bitmap(path1);
-			//testingFaces.Add(newBitmap1);
-
-			//path1 = string.Format(@"yaleB01\subject3 (3).bmp");
-			//newBitmap1 = new Bitmap(path1);
-			//testingFaces.Add(newBitmap1);
+            }
 
 
-			ImageToArray converter = new ImageToArray(-1, +1);
+            //string path1 = string.Format(@"yaleB01\tree.bmp");
+            //Bitmap newBitmap1 = new Bitmap(path1);
+            //testingFaces.Add(newBitmap1);
+
+            //path1 = string.Format(@"yaleB01\subject3 (3).bmp");
+            //newBitmap1 = new Bitmap(path1);
+            //testingFaces.Add(newBitmap1);
+
+
+            ImageToArray converter = new ImageToArray(-1, +1);
 
             List<double[]> trainingOutputList = new List<double[]>();
             foreach (Bitmap bitmap in trainingFaces)
@@ -96,37 +97,82 @@ namespace AccordFace {
 
 
             ObjectPCA obj = new ObjectPCA(data);
-            obj.Gamma = 22560;
+            //obj.take2();
+            
+            //obj.Compute();
+            //double[,] finalData = obj.KernelData;
+
+
+            //var image = testingOutputList[14].Transpose().Dot(finalData.Transpose());
+
+            // var image1 = data.Transpose().Dot(finalData.GetColumn(0));
+            //double[,] finalData = obj.FinalData;
+
+
+            //double[,] finalData =obj.plotPointPCA(testingOutputList[0]);
+            //foreach (var face in trainingOutputList)
+            //    obj.faceRecognition(face);
+
+
+            //-------------------------------------------------
+
+            obj.Gamma = Math.Pow(10, -3);
             obj.ComputeKernel();
-			//obj.Compute();
-			//double[,] finalData = obj.KernelData;
 
+            int[] indexesInitial = new int[testingOutputList.Count];
+            for (int i = 0; i < testingOutputList.Count; i++)
+                if (i < testingOutputList.Count / 2)
+                    indexesInitial[i] = 1;
+                else
+                    indexesInitial[i] = 2;
 
-			//var image = testingOutputList[14].Transpose().Dot(finalData.Transpose());
+            double min1 = double.MaxValue, max1 = double.MinValue, min2 = min1, max2 = max1;
+            for (int i = 0; i < trainingOutputList.Count; i++)
+            {
+                if (i < trainingOutputList.Count / 2)
+                {
+                    if (obj.KernelVectors[i] < min1)
+                        min1 = obj.KernelVectors[i];
+                    if (obj.KernelVectors[i] > max1)
+                        max1 = obj.KernelVectors[i];
+                }
+                else
+                {
+                    if (obj.KernelVectors[i] < min2)
+                        min2 = obj.KernelVectors[i];
+                    if (obj.KernelVectors[i] > max2)
+                        max2 = obj.KernelVectors[i];
+                }
+            }
 
-			// var image1 = data.Transpose().Dot(finalData.GetColumn(0));
-			//double[,] finalData = obj.FinalData;
+            int x = 0;
 
+            double mean1 = min2 - (max1 + min2) / 2;
+            double separationPoint = min2 + Math.Abs(mean1);
 
-			//double[,] finalData =obj.plotPointPCA(testingOutputList[0]);
-			//foreach (var face in trainingOutputList)
-			//    obj.faceRecognition(face);
+            int[] indexesFinal = new int[testingOutputList.Count];
 
+            foreach (var face in testingOutputList)
+            {
+                System.Console.WriteLine(x++);
+                double aux = obj.plotPointKernelPCA(face);
+                System.Console.WriteLine(aux);
+                if (aux < separationPoint)
+                    indexesFinal[testingOutputList.IndexOf(face)] = 1;
+                else
+                    indexesFinal[testingOutputList.IndexOf(face)] = 2;
 
-			int[] indexesInitial = new int[testingOutputList.Count];
-			for (int i = 0; i < testingOutputList.Count; i++)
-				if (i < testingOutputList.Count / 2)
-					indexesInitial[i] = 1;
-				else
-					indexesInitial[i] = 2;
+            }
 
-			int x = 0;
-			foreach(var face in testingOutputList)
-			{
-				System.Console.WriteLine(x++);
-				System.Console.WriteLine(obj.plotPointKernelPCA(face));
-			}
-				
+            Console.WriteLine(obj.KernelVectors.ToString("+0.0000;-0.0000"));
+            Console.WriteLine();
+            Console.WriteLine(obj.KernelValues);
+            Console.WriteLine();
+            Console.WriteLine(indexesInitial.ToString("+0.0000;-0.0000"));
+            Console.WriteLine(indexesFinal.ToString("+0.0000;-0.0000"));
+            Console.WriteLine(separationPoint);
+
+            //------------------------------------------------------------
 
 
             //int minimi = 0;
