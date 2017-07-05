@@ -1,0 +1,168 @@
+\documentclass[xcolor=dvipsnames]{beamer}
+\usetheme[secheader]{Boadilla}
+%\usetheme[secheader]{Madrid}
+\usecolortheme[named=ForestGreen]{structure} 
+\setbeamertemplate{items}[ball] 
+\setbeamertemplate{blocks}[rounded][shadow=true] 
+
+\usepackage[utf8]{inputenc}
+\usepackage{algorithmic}
+\usepackage[procnames]{listings}
+\usepackage{color}
+\usepackage{verbatim}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{qtree}
+
+
+\title[Database Management Systems]{
+	Database Management Systems \\
+	{\normalsize Cap 1. Introducere. Modelul Relaţional}
+}
+
+\author[]{}
+\date{\today}
+\institute[]{}
+
+\begin{document}
+
+\definecolor{keywords}{RGB}{255,0,90}
+\definecolor{comments}{RGB}{0,0,113}
+\definecolor{red}{RGB}{160,0,0}
+\definecolor{green}{RGB}{0,100,0}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{language=Python, 
+	    basicstyle=\ttfamily\small, 
+	    keywordstyle=\color{keywords},
+	    commentstyle=\color{comments},
+	    stringstyle=\color{red},
+	    showstringspaces=false,
+	    identifierstyle=\color{green},
+	    procnamekeys={def,class}}
+	    
+\lstset{language=Java,
+	  aboveskip=3mm,
+	  belowskip=3mm,
+	  showstringspaces=false,
+	  columns=flexible,
+	  basicstyle={\small\ttfamily},
+	  numbers=none,
+	  numberstyle=\tiny\color{gray},
+	  keywordstyle=\color{blue},
+	  commentstyle=\color{dkgreen},
+	  stringstyle=\color{mauve},
+	  breaklines=true,
+	  breakatwhitespace=true,
+	  tabsize=3
+}
+\lstset{language=SQL,
+      showspaces=false,
+      basicstyle=\ttfamily,
+      numbers=left,
+      numberstyle=\tiny,
+      keywordstyle=\color{blue},
+      commentstyle=\color{gray},
+      commentstyle=\color{dkgreen},
+      stringstyle=\color{mauve}
+}
+
+
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\frame{
+	\tableofcontents
+}
+
+\section{Introducere}
+\frame{\tableofcontents[currentsection]}
+
+\frame {
+	\frametitle{Database Management System (DBMS)}
+	\begin{itemize}
+	  \item manipularea unor cantităţi mari de date, mai exact \ldots
+	  \item o modalitate eficientă, sigură, uşor de programat, cu
+	  acces multi-user, de stocare şi accesare a unor volume masive de date
+	  persistente
+	  \item larg răspândite: web-sites, sisteme bancare, sisteme de comunicaţie,
+	  experimente ştiinţifice
+	\end{itemize}
+}
+
+
+\frame{
+	\frametitle{Queries}
+	\begin{minipage}[t]{1\linewidth}
+		\begin{itemize}
+		  \item un query (o expresie) aplicat(ă) pe o mulţime de relaţii va avea ca
+		  rezultat o altă relaţie
+		\end{itemize}
+	\end{minipage}
+	\vfill
+	\begin{minipage}[t]{1\linewidth}
+	
+	\end{minipage}	
+}
+
+
+\frame{
+	\frametitle{Operatorul 'project'}
+	\only<1> {
+		\begin{itemize}
+		  	\item alege anumite coloane
+		  	\item ID-urile studenţilor şi deciziile lor
+		  	\item[] $\pi_{sID, decision} Apply$ - doar două coloane
+		\end{itemize}
+	}
+	\only<2>{
+		\begin{itemize}
+		  	\item ID-urile studenţilor şi numele lor, pentru cei cu $GPA > 3.7$
+		  	\item compunerea operatorilor:
+		\end{itemize}		
+	}
+	\only<3>{
+		\begin{itemize}
+		  	\item ID-urile studenţilor şi numele lor, pentru cei cu $GPA > 3.7$
+		  	\item compunerea operatorilor:
+	  		\item[] $\sigma_{GPA > 3.7}$
+		\end{itemize}		
+	}
+	\only<4>{
+		\begin{itemize}
+		  	\item ID-urile studenţilor şi numele lor, pentru cei cu $GPA > 3.7$
+		  	\item compunerea operatorilor:
+	  		\item[] $\pi_{sID, name}(\sigma_{GPA > 3.7})$
+	  		\item select şi project lucrează nu neapărat pe o relaţie, ci pe orice
+	  		expresie
+		\end{itemize}		
+	}	
+	\begin{minipage}[t]{1\linewidth}
+		
+	\end{minipage}
+}
+
+\frame{
+	\frametitle{Exemplu: select şi project}
+	\begin{itemize}
+  		\item e util să compunem două select-uri ? exemplu:
+  		\item[] $\sigma_{state='CA'}(\sigma_{enroll > 1000} College)$ \only<2->{NU}
+  		\item<3-> dar două project-uri ? exemplu:
+  		\item<3->[] $\pi_{GPA}(\pi_{sID, GPA, sizeHS} Student)$ \only<4->{NU}
+  		\item<5-> dar e permis? \only<6->{DA} 
+	\end{itemize}	
+	\begin{minipage}[t]{1\linewidth}
+		
+	\end{minipage}
+}
+
+
+
+\end{document}
+
+

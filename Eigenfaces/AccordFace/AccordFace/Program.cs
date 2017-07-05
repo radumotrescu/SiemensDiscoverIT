@@ -19,7 +19,7 @@ namespace AccordFace {
             int imageWidth = 192;
             int imageHeight = 168;
             int trainingImageNumber = 10;
-            int testingImageNumber = 14;
+            int testingImageNumber = 3;
 
             for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
             {
@@ -34,30 +34,30 @@ namespace AccordFace {
 
             }
 
-            //for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
-            //{
+			for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
+			{
 
-            //    string path = string.Format(@"yaleB03\subject3 ({0}).bmp", i);
+				string path = string.Format(@"yaleB03\subject3 ({0}).bmp", i);
 
-            //    Bitmap newBitmap = new Bitmap(path);
-            //    if (i <= trainingImageNumber)
-            //        trainingFaces.Add(newBitmap);
-            //    else
-            //        testingFaces.Add(newBitmap);
+				Bitmap newBitmap = new Bitmap(path);
+				if (i <= trainingImageNumber)
+					trainingFaces.Add(newBitmap);
+				else
+					testingFaces.Add(newBitmap);
 
-            //}
-
-
-            //string path1 = string.Format(@"yaleB01\tree.bmp");
-            //Bitmap newBitmap1 = new Bitmap(path1);
-            //testingFaces.Add(newBitmap1);
-
-            //path1 = string.Format(@"yaleB01\subject3 (3).bmp");
-            //newBitmap1 = new Bitmap(path1);
-            //testingFaces.Add(newBitmap1);
+			}
 
 
-            ImageToArray converter = new ImageToArray(-1, +1);
+			//string path1 = string.Format(@"yaleB01\tree.bmp");
+			//Bitmap newBitmap1 = new Bitmap(path1);
+			//testingFaces.Add(newBitmap1);
+
+			//path1 = string.Format(@"yaleB01\subject3 (3).bmp");
+			//newBitmap1 = new Bitmap(path1);
+			//testingFaces.Add(newBitmap1);
+
+
+			ImageToArray converter = new ImageToArray(-1, +1);
 
             List<double[]> trainingOutputList = new List<double[]>();
             foreach (Bitmap bitmap in trainingFaces)
@@ -96,23 +96,37 @@ namespace AccordFace {
 
 
             ObjectPCA obj = new ObjectPCA(data);
-            obj.Gamma = 15;
+            obj.Gamma = 22560;
             obj.ComputeKernel();
-            //obj.Compute();
-            //double[,] finalData = obj.KernelData;
+			//obj.Compute();
+			//double[,] finalData = obj.KernelData;
 
 
-            //var image = testingOutputList[14].Transpose().Dot(finalData.Transpose());
+			//var image = testingOutputList[14].Transpose().Dot(finalData.Transpose());
 
-            // var image1 = data.Transpose().Dot(finalData.GetColumn(0));
-            //double[,] finalData = obj.FinalData;
+			// var image1 = data.Transpose().Dot(finalData.GetColumn(0));
+			//double[,] finalData = obj.FinalData;
 
 
-            //double[,] finalData =obj.plotPointPCA(testingOutputList[0]);
-            //foreach (var face in trainingOutputList)
-            //    obj.faceRecognition(face);
+			//double[,] finalData =obj.plotPointPCA(testingOutputList[0]);
+			//foreach (var face in trainingOutputList)
+			//    obj.faceRecognition(face);
 
-            double finalData = obj.plotPointKernelPCA(testingOutputList[13]);
+
+			int[] indexesInitial = new int[testingOutputList.Count];
+			for (int i = 0; i < testingOutputList.Count; i++)
+				if (i < testingOutputList.Count / 2)
+					indexesInitial[i] = 1;
+				else
+					indexesInitial[i] = 2;
+
+			int x = 0;
+			foreach(var face in testingOutputList)
+			{
+				System.Console.WriteLine(x++);
+				System.Console.WriteLine(obj.plotPointKernelPCA(face));
+			}
+				
 
 
             //int minimi = 0;
