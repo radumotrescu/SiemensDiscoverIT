@@ -97,7 +97,7 @@ namespace AccordFace {
 
 
             ObjectPCA obj = new ObjectPCA(data);
-            //obj.take2();
+            obj.take2();
             
             //obj.Compute();
             //double[,] finalData = obj.KernelData;

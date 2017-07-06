@@ -8,4 +8,6 @@
 \contentsline {paragraph}{\numberline {2.0.0.6}Pasul final PCA}{6}
 \contentsline {section}{\numberline {3}Jurnalul dezvoltarii aplicatiei}{7}
 \contentsline {subsection}{\numberline {3.1}Aplicatia AccordPCA}{7}
-\contentsline {subsection}{\numberline {3.2}Aplicatia PlotPCA}{8}
+\contentsline {subsection}{\numberline {3.2}Aplicatia PlotPCA}{9}
+\contentsline {subsubsection}{\numberline {3.2.1}Setul 3-cloud-points}{9}
+\contentsline {subsubsection}{\numberline {3.2.2}Setul two-moon si abordarea Kernel PCA}{9}
