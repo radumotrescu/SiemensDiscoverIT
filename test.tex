@@ -191,5 +191,60 @@ Pentru a aborda problema seturilor de date liniar inseparabile, nu putem folosi 
 
 Abordarea Kernel PCA rezolva acest lucru prin proiectarea datelor intr-un spatiu dimensional mai mare, unde ele vor deveni liniar separabile, iar acest lucru se face cu o "functie kernel".
 
+Pentru a implementa Kernel PCA, vom avea in considerare urmatoarele 2 lucruri:
 
+\textbf{1. Calcularea matricii kernel} 
+
+Pentru fiecare pereche de puncte se calculeaza :
+
+\begin{equation}
+k(x_i,x_j)=\exp(-\gamma \|x_i - x_j\|_2^2)
+\end{equation}
+
+Daca avem un set de date cu 100 de mostre, matricea kernel va fi o matrice simetrica $100 \times 100$.
+
+Alegerea valorii lui $\gamma$ este foarte importanta, in functie de ea rezultatul va fi cel dorit sau nu.
+
+\textbf{2. Calcularea vectorilor si a valorilor proprii}
+
+Deoarece nu putem garanta ca matricea e centrata, vom aplica urmatoarea formula pentru a o centra: 
+
+\begin{equation}
+K'=K-1_NK-K1_N+1_NK1_N
+\end{equation}
+
+unde $1_N$ este o matrice $N \times N$ cu toate valorile egale cu $\frac{1}{N}$.
+Acum, putem afla vectorii si valorile proprii pentru matricea centrata, iar vectorii proprii vor reprezenta setul de date proiectat pe componentele principale respective.
+
+In imaginile urmatoare se poate observa cum algoritmul PCA si algoritmul KPCA afecteaza setul de date two-moon, rezultatul obtin prin folosirea KPCA este mult mai bun. 
+
+** IMAGINI AICI **
+
+\subsubsection{Cros-validare 10-fold}
+Pentru a ne asigura ca algoritmul se comporta corect si in alte situatii, am decis sa facem o cros-validare 10-fold (10-fold crossvalidation). Acest lucru implica urmatoarele: 
+
+-avem 100 de puncte, distribuite in setul de date two-moon
+
+-din acestea, vom alege pe rand, cate 10 puncte, diferite de fiecare data, si vom retine norul din care face parte fiecare
+
+-cu celelalte 90 de puncte vom "antrena" algoritmul pentru a putea proiecta celelalte 10 puncte pe componentele principale respective, in cazul nostru, dorim sa facem proiectarea pe prima componenta principala
+
+-avand cele 90 de puncte proiectate in spatiul nou, putem determina din nou granitele celor 2 nori de puncte, iar mijlocul acestor granite va fi punctul nostru de separare a norilor
+
+-cu punctul de separare gasit, cele 10 puncte proiectate pe prima componenta principala pot fi categorizate: daca se afla in stanga punctului de separare el va fi in norul albastru de puncte, iar daca este la dreapta punctul de separare, va apartine norului rosu
+
+-stiind din ce nori au provenit punctele si in ce nori au fost proiectati, putem verifica eroarea algoritmului pentru cele 10 puncte: $\frac{nr. \text { } puncte \text { } proiectate \text { } gresit}{nr. \text { } puncte \text { } totale}$
+
+-repetam acest proces pana cand toate punctele au fost proiectate, iar eroarea de final este cea cautata
+
+In cazul testelor noastre, eroarea a variat intre 1\% si 4\%, fiind un rezultat foarte bun.
+
+\newpage
+
+\subsection{Aplicatia AccordFace}
+Dupa ce am realizat testele KPCA, urmatorul pas a fost sa crestem dimensiunile cu care lucram. Mai exact, am inceput sa folosim imagini pentru a vedea cum actioneaza algoritmul PCA pe ele.
+
+Imaginile folosite au fost cele din baza de date Yale, care a fost folosita in multe alte cercetari de genul acesta, continand destui subiecti si destule imagini pentru a putea testa orice algoritm.
+
+Pentru a putea procesa aceste imagini, ele trebuiau sa aiba toate aceeasi dimensiune, in cazul nostru $168 \times 192$, iar pentru a le procesa algoritmul,
 \end{document}

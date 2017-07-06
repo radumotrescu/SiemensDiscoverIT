@@ -505,9 +505,18 @@ namespace AccordPCA {
             var x1 = eigenvectors.GetColumn(0).Transpose().Dot(matrix.GetRow(0).Transpose());
         }
 
+        double sqEuclidianDistance(double[] row1, double[] row2)
+        {
+            double val = 0;
+            for (int i = 0; i < row1.Length; i++)
+                val += (row1[i] - row2[i]);
+            return val;
+        }
 
         public double projectImage(double[,] image)
         {
+            var mean = image.Mean(0);
+            image = image.Subtract(mean, 0);
             S = image.Dot(eigenvectors.GetColumn(0).Transpose());
 
             var diff = W.Subtract(S.GetColumn(0), 0);
@@ -522,6 +531,48 @@ namespace AccordPCA {
                     minIndex = i;
                 }
             return minVal;
+        }
+
+        public double MaxValue 
+        {
+            get;
+            set;
+        }
+
+        public void setMaxValue()
+        {
+            MaxValue = double.MinValue;
+            double sum = 0;
+            for (int i = 0; i < initialData.Rows(); i++)
+            {
+                double value = projectImage(initialData.GetRow(i).Transpose());
+                //Console.WriteLine(value + " " +i);
+                if (value > MaxValue)
+                    MaxValue = value;
+                sum += value;
+            }
+            Console.WriteLine("SET MAX VALUE");
+            MaxValue = sum / initialData.Rows();
+            //double[,] matrice = new double[W.Columns(), W.Columns()];
+            //for (int i = 0; i < W.Columns(); i++)
+            //    for (int j = 0; j < W.Columns(); j++)
+            //        matrice[i, j] = sqEuclidianDistance(W.GetColumn(i), W.GetColumn(j));
+
+            //var norms = getNorms(matrice);
+            //int index = 0;
+            //MaxValue = double.MinValue;
+            //for (int i = 0; i < norms.Length; i++)
+            //{
+            //    for (int j = 0; j < norms.Length; j++)
+            //        if (norms[i] - norms[j] > MaxValue)
+            //        {
+            //            MaxValue = norms[i] - norms[j];
+            //        }
+            //}
+            //double maxValue = double.MinValue;
+            //foreach (double d in norms)
+            //    if (d > MaxValue)
+            //        MaxValue = d;
         }
     }
 }

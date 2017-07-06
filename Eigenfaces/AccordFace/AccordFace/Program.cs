@@ -20,11 +20,11 @@ namespace AccordFace {
             List<Bitmap> settingFaces = new List<Bitmap>();
             int imageWidth = 192;
             int imageHeight = 168;
-            int trainingImageNumber = 15;
-            int settingImageNumber = 5;
-            int testingImageNumber = 45;
+            int trainingImageNumber = 44;
+            //int settingImageNumber = 5;
+            int testingImageNumber = 21;
 
-            for (int i = 1; i <= trainingImageNumber + testingImageNumber + settingImageNumber; i++)
+            for (int i = 1; i <= trainingImageNumber + testingImageNumber; i++)
             {
 
                 string path = string.Format(@"yaleB01\subject1 ({0}).bmp", i);
@@ -32,8 +32,6 @@ namespace AccordFace {
                 Bitmap newBitmap = new Bitmap(path);
                 if (i <= trainingImageNumber)
                     trainingFaces.Add(newBitmap);
-                else if (i < trainingImageNumber + settingImageNumber)
-                    settingFaces.Add(newBitmap);
                 else
                     testingFaces.Add(newBitmap);
 
@@ -84,13 +82,13 @@ namespace AccordFace {
                 testingOutputList.Add(newOutput);
             }
 
-            List<double[]> settingOutputList = new List<double[]>();
-            foreach (Bitmap bitmap in settingFaces)
-            {
-                double[] newOutput;
-                converter.Convert(bitmap, out newOutput);
-                settingOutputList.Add(newOutput);
-            }
+            //List<double[]> settingOutputList = new List<double[]>();
+            //foreach (Bitmap bitmap in settingFaces)
+            //{
+            //    double[] newOutput;
+            //    converter.Convert(bitmap, out newOutput);
+            //    settingOutputList.Add(newOutput);
+            //}
 
 
 
@@ -114,29 +112,29 @@ namespace AccordFace {
 
             ObjectPCA obj = new ObjectPCA(data);
             obj.take2();
-<<<<<<< HEAD
+            obj.setMaxValue();
             var finalData = obj.W;
 
             //var x = obj.projectImage(testingOutputList[10].Transpose());
             //Console.WriteLine(x);
             double x;
             double max = 0;
-            foreach (var row in settingOutputList)
-            {
-                x = obj.projectImage(row.Transpose());
-                if (x > max)
-                    max = x;
-            }
-            Console.WriteLine("max " + max);
+            //foreach (var row in settingOutputList)
+            //{
+            //    x = obj.projectImage(row.Transpose());
+            //    if (x > max)
+            //        max = x;
+            //}
+            Console.WriteLine("max " + obj.MaxValue);
             int bad = 0;
             int v = 0;
             foreach (var row in testingOutputList)
             {
                 x = obj.projectImage(row.Transpose());
-                //Console.WriteLine(x+" "+v++);
-                if (x > max)
+               // Console.WriteLine(x+" "+v++);
+                if (x > obj.MaxValue)
                 {
-                    Console.WriteLine(testingOutputList.IndexOf(row) + settingImageNumber + trainingImageNumber + " " + x);
+                    Console.WriteLine(testingOutputList.IndexOf(row) + trainingImageNumber + " " + x);
                     bad++;
                 }
 
@@ -159,9 +157,7 @@ namespace AccordFace {
             //    eigenface.Save(path);
             //}
 
-=======
-            
->>>>>>> a3e1fce4e086278d278a8aff176a6a0e08b0108a
+
             //obj.Compute();
             //double[,] finalData = obj.KernelData;
 
