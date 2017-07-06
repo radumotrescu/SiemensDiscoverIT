@@ -114,6 +114,7 @@ namespace AccordFace {
 
             ObjectPCA obj = new ObjectPCA(data);
             obj.take2();
+<<<<<<< HEAD
             var finalData = obj.W;
 
             //var x = obj.projectImage(testingOutputList[10].Transpose());
@@ -158,6 +159,9 @@ namespace AccordFace {
             //    eigenface.Save(path);
             //}
 
+=======
+            
+>>>>>>> a3e1fce4e086278d278a8aff176a6a0e08b0108a
             //obj.Compute();
             //double[,] finalData = obj.KernelData;
 
