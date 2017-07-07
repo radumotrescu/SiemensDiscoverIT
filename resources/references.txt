@@ -1,0 +1,2 @@
+Image Modeling based on Kernel Principal Component Analysis:
+	https://pdfs.semanticscholar.org/118a/336b7b8f305634f5fad8bbefcff988da601f.pdf
