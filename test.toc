@@ -12,4 +12,4 @@
 \contentsline {subsubsection}{\numberline {3.2.1}Setul 3-cloud-points}{9}
 \contentsline {subsubsection}{\numberline {3.2.2}Setul two-moon si abordarea Kernel PCA}{9}
 \contentsline {subsubsection}{\numberline {3.2.3}Cros-validare 10-fold}{10}
-\contentsline {subsection}{\numberline {3.3}Aplicatia AccordFace}{11}
+\contentsline {subsection}{\numberline {3.3}Aplicatia Eigenfaces}{11}

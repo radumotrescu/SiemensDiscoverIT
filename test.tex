@@ -241,10 +241,17 @@ In cazul testelor noastre, eroarea a variat intre 1\% si 4\%, fiind un rezultat 
 
 \newpage
 
-\subsection{Aplicatia AccordFace}
+\subsection{Aplicatia Eigenfaces}
 Dupa ce am realizat testele KPCA, urmatorul pas a fost sa crestem dimensiunile cu care lucram. Mai exact, am inceput sa folosim imagini pentru a vedea cum actioneaza algoritmul PCA pe ele.
 
 Imaginile folosite au fost cele din baza de date Yale, care a fost folosita in multe alte cercetari de genul acesta, continand destui subiecti si destule imagini pentru a putea testa orice algoritm.
 
-Pentru a putea procesa aceste imagini, ele trebuiau sa aiba toate aceeasi dimensiune, in cazul nostru $168 \times 192$, iar pentru a le procesa algoritmul,
+Pentru a putea procesa aceste imagini, ele trebuiau sa aiba toate aceeasi dimensiune, in cazul nostru $168 \times 192$, iar fiecare imagine va deveni un rand din matricea care va fi prelucrata de algoritmul PCA.
+
+Fetele rezultate din acest algoritm reprezinta toti vectorii proprii care contribuie la spatiul fetelor intr-un mod semnificativ, si sunt sortati dupa valoarea proprie: 
+
+** IMAGINE EIGENFACES AICI ** 
+
+Pentru a putea proiecta o imagine noua in spatiul fetelor, tot ce trebuie sa facem este sa inmultim vectorul imaginii cu matricea vectorilor proprii
+
 \end{document}
