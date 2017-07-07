@@ -51,13 +51,13 @@ namespace PlotPCA {
             zedGraphControl2.IsShowPointValues = true;
 
             myPaneOriginalLine = zedGraphControl3.GraphPane;
-            myPaneOriginalLine.Title.Text = "PCA Original Line Spam";
+            myPaneOriginalLine.Title.Text = "PCA Original First Component Span";
             myPaneOriginalLine.XAxis.Title.Text = "X Coordinates";
             myPaneOriginalLine.YAxis.Title.Text = "Y Coordinates";
             zedGraphControl3.IsShowPointValues = true;
 
             myPaneFinalLine = zedGraphControl4.GraphPane;
-            myPaneFinalLine.Title.Text = "PCA Final Line Spam";
+            myPaneFinalLine.Title.Text = "PCA Final First Component Span";
             myPaneFinalLine.XAxis.Title.Text = "X Coordinates";
             myPaneFinalLine.YAxis.Title.Text = "Y Coordinates";
             zedGraphControl4.IsShowPointValues = true;
@@ -335,9 +335,9 @@ namespace PlotPCA {
 
             clearPlots();
 
-            var initialPointCloud1 = new PointCloud(cloud1Points, 5, 2, 2);
+            var initialPointCloud1 = new PointCloud(cloud1Points, 5, 8, 8);
             var initialPointCloud2 = new PointCloud(cloud2Points, 5, 15, 15);
-            var initialPointCloud3 = new PointCloud(cloud3Points, 10, 40, 40);
+            var initialPointCloud3 = new PointCloud(cloud3Points, 10, 20, 20);
 
             var csv = new StreamWriter("cloud.csv");
             var csvWriter = new CsvHelper.CsvWriter(csv);
@@ -703,13 +703,13 @@ namespace PlotPCA {
                 {
                     cloud1InitialExcluded = cloud1InitialExcluded.InsertRow(point);
                     indexesInitial[i] = 1;
-                    cloud1Points--;
+                    //cloud1Points--;
                 }
                 else if (inCloud(data2, point))
                 {
                     cloud2InitialExcluded = cloud2InitialExcluded.InsertRow(point);
                     indexesInitial[i] = 2;
-                    cloud2Points--;
+                    //cloud2Points--;
                 }
 
             }
@@ -742,143 +742,143 @@ namespace PlotPCA {
 
             #region dowhile
 
-            var g1 = new double[0, 0];
-            var g2 = new double[0, 0];
-            do
-            {
+            //var g1 = new double[0, 0];
+            //var g2 = new double[0, 0];
+            //do
+            //{
 
-                PCA.Gamma = gamma;
-                PCA.ComputeKernel();
-                //PCA.kernelAccord();
-                cloud1Range = new Range { x = 0, y = cloud1Points };
-                cloud2Range = new Range { x = cloud1Points, y = cloud1Points + cloud2Points };
+            //    PCA.Gamma = gamma;
+            //    PCA.ComputeKernel();
+            //    //PCA.kernelAccord();
+            //    cloud1Range = new Range { x = 0, y = cloud1Points };
+            //    cloud2Range = new Range { x = cloud1Points, y = cloud1Points + cloud2Points };
 
-                finalData1 = PCA.KernelData.Get((int)cloud1Range.x, (int)cloud1Range.y, 0, 2);
-                finalData2 = PCA.KernelData.Get((int)cloud2Range.x, (int)cloud2Range.y, 0, 2);
+            //    finalData1 = PCA.KernelData.Get((int)cloud1Range.x, (int)cloud1Range.y, 0, 2);
+            //    finalData2 = PCA.KernelData.Get((int)cloud2Range.x, (int)cloud2Range.y, 0, 2);
 
-                double min1, max1, min2, max2;
+            //    double min1, max1, min2, max2;
 
-                getMinMax(finalData1.GetColumn(0), out min1, out max1);
-                getMinMax(finalData2.GetColumn(0), out min2, out max2);
-
-
-
-                Range r1 = new Range(), r2 = new Range();
-                //
-                {
-                    tested = true;
-                    double mean1 = min2 - (max1 + min2) / 2;
-                    if (max1 < min2)
-                    {
-                        Console.WriteLine("okg");
-                        separationPoint = min2 - mean1;
-                    }
-                    else
-                    {
-                        separationPoint = min2 + Math.Abs(mean1);
-                    }
-
-                    r1.newRange(min1 - mean1, max1 + mean1);
-                    r2.newRange(min2 - mean1, max2 + mean1);
-
-                    //double mean1 = (min1 + max1) / 2;
-                    //double mean2 = (min2 + max2) / 2;
+            //    getMinMax(finalData1.GetColumn(0), out min1, out max1);
+            //    getMinMax(finalData2.GetColumn(0), out min2, out max2);
 
 
-                    //Console.WriteLine(gamma+ "AM INTRAT ");
-                    //Console.Write("R1: {0} {1} R2: {2} {3} \n", r1.x, r1.y, r2.x, r2.y);
-                    //Console.WriteLine(r1.x + " " + r1.y + " " + r2.x + " " + r2.y + " " + r3.x + " " + r3.y + " ");
 
-                    //double x, y;
-                    //x = (double)numericUpDown1.Value;
-                    //y = (double)numericUpDown2.Value;
-                    //var p = PCA.plotPointPCA(x, y);
+            //    Range r1 = new Range(), r2 = new Range();
+            //    //
+            //    {
+            //        tested = true;
+            //        double mean1 = min2 - (max1 + min2) / 2;
+            //        if (max1 < min2)
+            //        {
+            //            Console.WriteLine("okg");
+            //            separationPoint = min2 - mean1;
+            //        }
+            //        else
+            //        {
+            //            separationPoint = min2 + Math.Abs(mean1);
+            //        }
 
-                    double[,] plottedPoints = new double[0, 2];
+            //        r1.newRange(min1 - mean1, max1 + mean1);
+            //        r2.newRange(min2 - mean1, max2 + mean1);
 
-                    cloud1PlottedPoints = new double[0, 2];
-                    cloud2PlottedPoints = new double[0, 2];
-
-                    double[,] initialExcludedPoints = new double[0, 2];
-                    for (int i = 0; i < excludedPointsNumber; i++)
-                    {
-                        initialExcludedPoints = initialExcludedPoints.InsertRow(bigAllData.GetRow(indexes[i]));
-                        plottedPoints = plottedPoints.InsertRow(new double[] { PCA.plotPointKernelPCA(bigAllData.GetRow(indexes[i])), 0 });
-                        if (indexes[i] < 50)
-                        {
-                            cloud1PlottedPoints = cloud1PlottedPoints.InsertRow(new double[] { plottedPoints[i, 0], plottedPoints[i, 1] });
-                        }
-                        else
-                        {
-                            cloud2PlottedPoints = cloud2PlottedPoints.InsertRow(new double[] { plottedPoints[i, 0], plottedPoints[i, 1] });
-                        }
-                    }
-                    //Console.WriteLine("Cloud1");
-                    //Console.WriteLine(cloud1PlottedPoints.ToString("+0.0000000;-0.000000"));
-                    //Console.WriteLine("Cloud2");
-                    //Console.WriteLine(cloud2PlottedPoints.ToString("+0.0000000;-0.000000"));
-
-                    int[] indexesFinal = new int[excludedPointsNumber];
-                    for (int i = 0; i < excludedPointsNumber; i++)
-                    {
-                        if (plottedPoints[i, 0] < separationPoint)
-                        {
-
-                            indexesFinal[i] = 1;
-                        }
-                        else if (plottedPoints[i, 0] > separationPoint)
-                        {
-
-                            indexesFinal[i] = 2;
-                        }
-
-                        //Console.WriteLine("{0}, {1}, {2}, {3}", bigAllData.GetRow(indexes[i])[0], plottedPoints[i, 0], indexesInitial[i], indexesFinal[i]);
-                    }
+            //        //double mean1 = (min1 + max1) / 2;
+            //        //double mean2 = (min2 + max2) / 2;
 
 
-                    //Console.WriteLine();
-                    //Console.WriteLine(plottedPoints.ToString("+0.0;-0.0"));
-                    //Console.WriteLine(indexesFinal.ToString("+0.0;-0.0"));
+            //        //Console.WriteLine(gamma+ "AM INTRAT ");
+            //        //Console.Write("R1: {0} {1} R2: {2} {3} \n", r1.x, r1.y, r2.x, r2.y);
+            //        //Console.WriteLine(r1.x + " " + r1.y + " " + r2.x + " " + r2.y + " " + r3.x + " " + r3.y + " ");
+
+            //        //double x, y;
+            //        //x = (double)numericUpDown1.Value;
+            //        //y = (double)numericUpDown2.Value;
+            //        //var p = PCA.plotPointPCA(x, y);
+
+            //        double[,] plottedPoints = new double[0, 2];
+
+            //        cloud1PlottedPoints = new double[0, 2];
+            //        cloud2PlottedPoints = new double[0, 2];
+
+            //        double[,] initialExcludedPoints = new double[0, 2];
+            //        for (int i = 0; i < excludedPointsNumber; i++)
+            //        {
+            //            initialExcludedPoints = initialExcludedPoints.InsertRow(bigAllData.GetRow(indexes[i]));
+            //            plottedPoints = plottedPoints.InsertRow(new double[] { PCA.plotPointKernelPCA(bigAllData.GetRow(indexes[i])), 0 });
+            //            if (indexes[i] < 50)
+            //            {
+            //                cloud1PlottedPoints = cloud1PlottedPoints.InsertRow(new double[] { plottedPoints[i, 0], plottedPoints[i, 1] });
+            //            }
+            //            else
+            //            {
+            //                cloud2PlottedPoints = cloud2PlottedPoints.InsertRow(new double[] { plottedPoints[i, 0], plottedPoints[i, 1] });
+            //            }
+            //        }
+            //        //Console.WriteLine("Cloud1");
+            //        //Console.WriteLine(cloud1PlottedPoints.ToString("+0.0000000;-0.000000"));
+            //        //Console.WriteLine("Cloud2");
+            //        //Console.WriteLine(cloud2PlottedPoints.ToString("+0.0000000;-0.000000"));
+
+            //        int[] indexesFinal = new int[excludedPointsNumber];
+            //        for (int i = 0; i < excludedPointsNumber; i++)
+            //        {
+            //            if (plottedPoints[i, 0] < separationPoint)
+            //            {
+
+            //                indexesFinal[i] = 1;
+            //            }
+            //            else if (plottedPoints[i, 0] > separationPoint)
+            //            {
+
+            //                indexesFinal[i] = 2;
+            //            }
+
+            //            //Console.WriteLine("{0}, {1}, {2}, {3}", bigAllData.GetRow(indexes[i])[0], plottedPoints[i, 0], indexesInitial[i], indexesFinal[i]);
+            //        }
 
 
-                    int differentPoints = 0;
-                    for (int i = 0; i < excludedPointsNumber; i++)
-                    {
-                        if (indexesInitial[i] != indexesFinal[i])
-                            differentPoints++;
-                    }
-                    //Console.WriteLine();
-                    //Console.WriteLine(differentPoints);
-                    //Console.WriteLine(differentPoints + " "+gamma);
-                    if (differentPoints < minPoints)
-                    {
-                        minPoints = differentPoints;
-                        goodSeparationPoint = separationPoint;
-                        goodGamma = gamma;
-                        r1bun = r1;
-                        r2bun = r2;
-                        g1 = cloud1PlottedPoints;
-                        g2 = cloud2PlottedPoints;
-                        if (max1 < min2)
-                        {
-                            Console.WriteLine("ok da");
+            //        //Console.WriteLine();
+            //        //Console.WriteLine(plottedPoints.ToString("+0.0;-0.0"));
+            //        //Console.WriteLine(indexesFinal.ToString("+0.0;-0.0"));
 
-                        }
-                        else
-                        {
-                            Console.WriteLine("ok nu");
-                        }
-                    }
 
-                }
+            //        int differentPoints = 0;
+            //        for (int i = 0; i < excludedPointsNumber; i++)
+            //        {
+            //            if (indexesInitial[i] != indexesFinal[i])
+            //                differentPoints++;
+            //        }
+            //        //Console.WriteLine();
+            //        //Console.WriteLine(differentPoints);
+            //        //Console.WriteLine(differentPoints + " "+gamma);
+            //        if (differentPoints < minPoints)
+            //        {
+            //            minPoints = differentPoints;
+            //            goodSeparationPoint = separationPoint;
+            //            goodGamma = gamma;
+            //            r1bun = r1;
+            //            r2bun = r2;
+            //            g1 = cloud1PlottedPoints;
+            //            g2 = cloud2PlottedPoints;
+            //            if (max1 < min2)
+            //            {
+            //                Console.WriteLine("ok da");
 
-                gamma += 0.1;
-            } while (gamma < 20);
+            //            }
+            //            else
+            //            {
+            //                Console.WriteLine("ok nu");
+            //            }
+            //        }
+
+            //    }
+
+            //    gamma += 0.1;
+            //} while (gamma < 20);
 
 
             #endregion
 
-            //tested = true;
+            tested = true;
             if (tested == true)
             {
                 totalNumber += minPoints;
@@ -890,9 +890,9 @@ namespace PlotPCA {
                 //Console.WriteLine("R1: {0} {1} R2: {2} {3}", r1bun.x, r1bun.y, r2bun.x, r2bun.y);
                 Console.WriteLine("Separation Point: " + goodSeparationPoint);
                 Console.WriteLine();
-                //goodGamma = 15;
-                //PCA = new ObjectPCA(bigAllData);
-                PCA = new ObjectPCA(allData);
+                goodGamma = 15;
+                PCA = new ObjectPCA(bigAllData);
+                //PCA = new ObjectPCA(allData);
                 PCA.Gamma = goodGamma;
                 PCA.Compute();
                 PCA.ComputeKernel();
@@ -935,21 +935,21 @@ namespace PlotPCA {
 
 
 
-                var excludedCloudFinal = new PointPairList();
-                pointPairListInitialisation(excludedCloudFinal, plottedPoints);
-                var excludedCloudPointsInitial = myPaneFinalData.AddCurve("Excluded points", excludedCloudFinal, Color.Green, SymbolType.Square);
-                excludedCloudPointsInitial.Line.IsVisible = false;
+                //var excludedCloudFinal = new PointPairList();
+                //pointPairListInitialisation(excludedCloudFinal, plottedPoints);
+                //var excludedCloudPointsInitial = myPaneFinalData.AddCurve("Excluded points", excludedCloudFinal, Color.Green, SymbolType.Square);
+                //excludedCloudPointsInitial.Line.IsVisible = false;
 
 
-                var excludedCloud1 = new PointPairList();
-                pointPairListInitialisation(excludedCloud1,g1);
-                var excludedCloud1PointsFinal = myPaneFinalData.AddCurve("Excluded points", excludedCloud1, Color.Black, SymbolType.Square);
-                excludedCloud1PointsFinal.Line.IsVisible = false;
+                //var excludedCloud1 = new PointPairList();
+                //pointPairListInitialisation(excludedCloud1,g1);
+                //var excludedCloud1PointsFinal = myPaneFinalData.AddCurve("Excluded points", excludedCloud1, Color.Black, SymbolType.Square);
+                //excludedCloud1PointsFinal.Line.IsVisible = false;
 
-                var excludedCloud2 = new PointPairList();
-                pointPairListInitialisation(excludedCloud2, g2);
-                var excludedCloud2PointsFinal = myPaneFinalData.AddCurve("Excluded points", excludedCloud2, Color.Brown, SymbolType.Square);
-                excludedCloud2PointsFinal.Line.IsVisible = false;
+                //var excludedCloud2 = new PointPairList();
+                //pointPairListInitialisation(excludedCloud2, g2);
+                //var excludedCloud2PointsFinal = myPaneFinalData.AddCurve("Excluded points", excludedCloud2, Color.Brown, SymbolType.Square);
+                //excludedCloud2PointsFinal.Line.IsVisible = false;
 
 
                 //var excludedCloudInitial = new PointPairList();
@@ -957,15 +957,15 @@ namespace PlotPCA {
                 //var excludedCloudPointsFinal = myPaneOriginalData.AddCurve("Excluded points", excludedCloudInitial, Color.Green, SymbolType.Square);
                 //excludedCloudPointsFinal.Line.IsVisible = false;
 
-                var excludedCloud1Initial = new PointPairList();
-                pointPairListInitialisation(excludedCloud1Initial, cloud1InitialExcluded);
-                var excludedCloud1PointsInitial = myPaneOriginalData.AddCurve("Excluded points", excludedCloud1Initial, Color.Black, SymbolType.Square);
-                excludedCloud1PointsInitial.Line.IsVisible = false;
+                //var excludedCloud1Initial = new PointPairList();
+                //pointPairListInitialisation(excludedCloud1Initial, cloud1InitialExcluded);
+                //var excludedCloud1PointsInitial = myPaneOriginalData.AddCurve("Excluded points", excludedCloud1Initial, Color.Black, SymbolType.Square);
+                //excludedCloud1PointsInitial.Line.IsVisible = false;
 
-                var excludedCloud2Initial = new PointPairList();
-                pointPairListInitialisation(excludedCloud2Initial, cloud2InitialExcluded);
-                var excludedCloud2PointsInitial = myPaneOriginalData.AddCurve("Excluded points", excludedCloud2Initial, Color.Brown, SymbolType.Square);
-                excludedCloud2PointsInitial.Line.IsVisible = false;
+                //var excludedCloud2Initial = new PointPairList();
+                //pointPairListInitialisation(excludedCloud2Initial, cloud2InitialExcluded);
+                //var excludedCloud2PointsInitial = myPaneOriginalData.AddCurve("Excluded points", excludedCloud2Initial, Color.Brown, SymbolType.Square);
+                //excludedCloud2PointsInitial.Line.IsVisible = false;
 
 
                 #region ploting
@@ -995,6 +995,67 @@ namespace PlotPCA {
                 FinalCloud1Points.Line.IsVisible = false;
                 FinalCloud2Points = myPaneFinalData.AddCurve("Cloud2", finalCloud2, Color.Blue, SymbolType.Diamond);
                 FinalCloud2Points.Line.IsVisible = false;
+
+
+                // ------------- 
+                double[,] initialLineData1 = new double[data1.Rows(), 2];
+                for (int i = 0; i < data1.Rows(); i++)
+                {
+                    initialLineData1[i, 0] = data1[i, 0];
+                    initialLineData1[i, 1] = 1;
+                }
+                double[,] initialLineData2 = new double[data2.Rows(), 2];
+                for (int i = 0; i < data2.Rows(); i++)
+                {
+                    initialLineData2[i, 0] = data2[i, 0];
+                    initialLineData2[i, 1] = 1;
+                }
+
+
+
+
+                var initialLine1 = new PointPairList();
+                pointPairListInitialisation(initialLine1, initialLineData1);
+                var initialLine2 = new PointPairList();
+                pointPairListInitialisation(initialLine2, initialLineData2);
+
+
+                LineItem initialLine1Points = myPaneOriginalLine.AddCurve("Cloud1", initialLine1, Color.Red, SymbolType.Circle);
+                initialLine1Points.Line.IsVisible = false;
+                LineItem initialLine2Points = myPaneOriginalLine.AddCurve("Cloud2", initialLine2, Color.Blue, SymbolType.Diamond);
+                initialLine2Points.Line.IsVisible = false;
+
+
+
+                double[,] finalLineData1 = new double[finalData1.Rows(), 2];
+                for (int i = 0; i < finalData1.Rows(); i++)
+                {
+                    finalLineData1[i, 0] = finalData1[i, 0];
+                    finalLineData1[i, 1] = 1;
+                }
+                double[,] finalLineData2 = new double[finalData2.Rows(), 2];
+                for (int i = 0; i < finalData2.Rows(); i++)
+                {
+                    finalLineData2[i, 0] = finalData2[i, 0];
+                    finalLineData2[i, 1] = 1;
+                }
+
+
+
+                var finalLine1 = new PointPairList();
+                pointPairListInitialisation(finalLine1, finalLineData1);
+                var finalLine2 = new PointPairList();
+                pointPairListInitialisation(finalLine2, finalLineData2);
+
+
+                LineItem finalLine1Points = myPaneFinalLine.AddCurve("Cloud1", finalLine1, Color.Red, SymbolType.Circle);
+                finalLine1Points.Line.IsVisible = false;
+                LineItem finalLine2Points = myPaneFinalLine.AddCurve("Cloud2", finalLine2, Color.Blue, SymbolType.Diamond);
+                finalLine2Points.Line.IsVisible = false;
+
+
+
+                //-------------
 
                 replot();
 

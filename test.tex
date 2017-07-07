@@ -163,6 +163,7 @@ Primii pasi pe care i-am facut in cadrul acestui proiect a fost implementarea al
 Pentru a testa acest algoritm, am introdus prima data un set de date deja testat de catre altcineva, unde se poate observa clar rezultatul algoritmului. ( referinta catre http://dai.fmph.uniba.sk/courses/ml/sl/PCA.pdf) 
 \begin{figure}[H]
 \centering
+\caption{Primul test PCA}
 \includegraphics[width=\linewidth]{Test1}
 \end{figure}
 \newpage
@@ -171,12 +172,12 @@ Urmatorul lucru pe care l-am dorit sa il facem a fost sa vedem cum mai multe nor
 
 \begin{figure}[H]
 \centering
+\caption{Al doilea test PCA}
 \includegraphics[width=\linewidth]{Test2}
 \end{figure}
 
 La fel ca in primul test, se poate observa aranjarea dupa prima componenta principala a norilor.
 
-\newpage
 
 \subsection{Aplicatia PlotPCA}
 In acest moment, am decis sa realizam o aplicatie care are un GUI usor de folosit si unde fiecare nor de puncte este reprezentat in alta culoare, pentru a se vedea mai clar ce se intampla, acest lucru fiind mai important pentru seturile de date in care masuratorile pentru fiecare entitate sunt intrepatrunse.
@@ -184,7 +185,26 @@ In acest moment, am decis sa realizam o aplicatie care are un GUI usor de folosi
 \subsubsection{Setul 3-cloud-points}
 Primele teste pe care le-am facut, au fost pe 3 nori de puncte generati aleator, la fel ca in exemplul de mai sus, si se poate vedea mai clar separarea norilor atat pe in spatiu 2D, cat si pe axa primei componente, cea cu cea mai mare variatie. De asemenea, atunci cand norii se suprapun putin de-a lungul axei Y, algoritmul PCA reuseste sa separe norii complet de-a lungul axei primei componente. Pe de alta parte, daca norii se suprapun mai mult, atunci se poate observa ca algoritmul PCA nu mai poate separa norii la fel de bine ca si pana acum.
 
-** IMAGINI AICI **
+\begin{figure}[H]
+\centering
+\caption{Nori separati total}
+\includegraphics[width=\linewidth]{threecloud1}
+\end{figure}
+
+
+\begin{figure}[H]
+\caption{Nori interesectati partial}
+\centering
+\includegraphics[width=\linewidth]{threecloud2}
+\end{figure}
+
+
+\begin{figure}[H]
+\centering
+\caption{Norul albastru si verde intersectati aproape total}
+\includegraphics[width=\linewidth]{threecloud3}
+\end{figure}
+
 
 \subsubsection{Setul two-moon si abordarea Kernel PCA}
 Pentru a aborda problema seturilor de date liniar inseparabile, nu putem folosi abordarea PCA simpla, rezultatul nu va fi cel dorit, dupa cum se poate vedea aplicand algoritmul PCA pentru setul two-moon: cele doua seturi de puncte se amesteca de-a lungul primei componente principale, astfel o clasificare a unui nou punct proiectat in spatiul respectiv va fi dificila, deoarece nu putem seta un punct de delimitare intre cei doi nori, acestia fiind intrepatrunsi.
@@ -216,9 +236,14 @@ K'=K-1_NK-K1_N+1_NK1_N
 unde $1_N$ este o matrice $N \times N$ cu toate valorile egale cu $\frac{1}{N}$.
 Acum, putem afla vectorii si valorile proprii pentru matricea centrata, iar vectorii proprii vor reprezenta setul de date proiectat pe componentele principale respective.
 
-In imaginile urmatoare se poate observa cum algoritmul PCA si algoritmul KPCA afecteaza setul de date two-moon, rezultatul obtin prin folosirea KPCA este mult mai bun. 
+In imaginile urmatoare se poate observa cum algoritmul PCA si algoritmul KPCA afecteaza setul de date two-moon, rezultatul obtinut prin folosirea KPCA este mult mai bun. 
 
-** IMAGINI AICI **
+
+\begin{figure}[H]
+\centering
+\caption{Setul two-moon proiectat cu ajutorul algoritmul KPCA, $\gamma =15$}
+\includegraphics[width=\linewidth]{twomoon1}
+\end{figure}
 
 \subsubsection{Cros-validare 10-fold}
 Pentru a ne asigura ca algoritmul se comporta corect si in alte situatii, am decis sa facem o cros-validare 10-fold (10-fold crossvalidation). Acest lucru implica urmatoarele: 
@@ -239,6 +264,12 @@ Pentru a ne asigura ca algoritmul se comporta corect si in alte situatii, am dec
 
 In cazul testelor noastre, eroarea a variat intre 1\% si 4\%, fiind un rezultat foarte bun.
 
+\begin{figure}[H]
+\centering
+\caption{Exemplu de validare 10-fold}
+\includegraphics[width=\linewidth]{tenfold1}
+\end{figure}
+
 \newpage
 
 \subsection{Aplicatia Eigenfaces}
@@ -248,10 +279,58 @@ Imaginile folosite au fost cele din baza de date Yale, care a fost folosita in m
 
 Pentru a putea procesa aceste imagini, ele trebuiau sa aiba toate aceeasi dimensiune, in cazul nostru $168 \times 192$, iar fiecare imagine va deveni un rand din matricea care va fi prelucrata de algoritmul PCA.
 
-Fetele rezultate din acest algoritm reprezinta toti vectorii proprii care contribuie la spatiul fetelor intr-un mod semnificativ, si sunt sortati dupa valoarea proprie: 
+Fetele rezultate din acest algoritm reprezinta toti vectorii proprii care contribuie la spatiul fetelor intr-un mod semnificativ, si sunt sortati dupa valoarea proprie, si dupa cum se poate observa, aceste imagini devin din ce in ce mai nesemnificative: 
 
-** IMAGINE EIGENFACES AICI ** 
+\begin{figure}[H]
+\centering
+\caption{Primele 10 eigenfaces-uri ale primului subiect}
+\includegraphics[width=\linewidth]{eigenfaces}
+\end{figure}
 
-Pentru a putea proiecta o imagine noua in spatiul fetelor, tot ce trebuie sa facem este sa inmultim vectorul imaginii cu matricea vectorilor proprii
+\subsubsection{Proiectarea unei imagini noi}
+Pentru a putea proiecta o imagine noua in spatiul fetelor, tot ce trebuie sa facem este: 
 
+\begin{equation}
+X=X-avg(X)
+\end{equation}
+\begin{equation}
+Y=X^T \times E_0
+\end{equation}
+
+$X=$ este vectorul imaginii pe care o vom proiecta
+
+$E_0=$ este vectorul propriu asociat valorii proprii maxime
+
+$Y=$ este imaginea proiectata.
+
+\newpage
+\subsubsection{Clasificarea unei imagini noi}
+
+Pentru a vedea daca o imagine nou proiectata apartine sau nu setului initial de imagini, avem nevoie mai intai de imaginea proiectata, si de o granita, la fel ca la abordarea KPCA.
+
+Modul prin care vom afla daca o imagine apartine setului este prin calcularea distantei de la aceasta imagine la reprezentarea setului de imagini in spatiul respectiv, iar daca valorea aceasta este mai mica decat granita mentionata mai sus, imaginea va fi clasificata ca va apartine setului initial.
+
+Pentru a afla aceasta distanta, vom efectua urmatoarele operatii:
+
+\begin{equation}
+D=W_i-Y
+\end{equation}
+\begin{equation}
+N=\| D_i  \|
+\end{equation}
+\begin{equation}
+v=min(N)
+\end{equation}
+
+$W=$ reprezinta fetele setului de date initial proiectate in spatiul fetelor
+
+$D=$ diferenta dintre toate liniile lui $W$ si $Y$ 
+
+$N=$ norma fiecarei linii din $D$
+
+$v=$ este distanta dintre imaginea nou proiectata si spatiul fetelor
+
+Pentru a afla granita care delimiteaza imaginile din spatiul fetelor de celelalte, vom folosi aceleasi operatii ca si mai sus, dar aplicate pe toate imaginile setului initial, si vom cauta $v=avg(N)$, distanta medie dintre toate fetele proiectate si spatiul fetelor. Am ales sa facem acest lucru si sa nu cautam $v=max(N)$ deoarece se poate intampla ca o imagine din setul initial sa aiba distanta fata de spatiul fetelor disproportional mai mare fata de celelalte, si astfel granita de clasificare ar fi prea mare, incluzand orice imagine pe care incercam sa o proiectam.
+
+Acestea fiind zise, am facut urmatorul test: din cele 65 de imagini ale subiectului 1 din baza de date Yale, primele 44 au fost folosite pentru a "antrena" algoritmul, iar ultimele 21 au fost folosite pentru clasificare. Eroarea rezultata a fost de $\sim$ 50\%, imaginile care nu au fost clasificate ca facand parte in set au fost cele in care subiectul are numai jumatate de fata iluminata, numarul acestor imagini fiind $\sim$ 50\% din ele, deci putem trage concluzia ca algoritmul face ceea ce isi propune. 
 \end{document}
