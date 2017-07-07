@@ -1,2 +1,26 @@
-Image Modeling based on Kernel Principal Component Analysis:
+Kernel tricks and nonlinear dimensionality reduction via RBF kernel PCA:
+	http://sebastianraschka.com/Articles/2014_kernel_pca.html
+
+PCA eigenfaces Python example implementation
+	https://github.com/agyorev/Eigenfaces/blob/master/eigenfaces.py
+	
+
+	
+Kernel PCA and De-Noising in Feature Spaces: (new, metoda de Kernel PCA back-projection)
+	https://alex.smola.org/papers/1999/MikSchSmoMuletal99.pdf
+	
+Kernel PCA for image modeling: (new)
+	http://www-home.fh-konstanz.de/~mfranz/kha.htm
+
+Nonlinear Component Analysis as a Kernel Eigenvalue Problem: (new)
+	http://www.face-rec.org/algorithms/Kernel/kernelPCA_scholkopf.pdf
+	
+Kernel PCA Pattern Reconstruction via Approximate PreImages: (new)
+	https://alex.smola.org/papers/1998/SchMikSmoRatetal98.pdf
+
+Kernel PCA and Pre-Image Reconstruction: (new, implementare Matlab a articolului lui Wang)
+	https://de.mathworks.com/matlabcentral/fileexchange/39715-kernel-pca-and-pre-image-reconstruction?requestedDomain=www.mathworks.com
+
+Image Modeling based on Kernel Principal Component Analysis: (new)
 	https://pdfs.semanticscholar.org/118a/336b7b8f305634f5fad8bbefcff988da601f.pdf
+	
